@@ -2,7 +2,7 @@
 // Assignment:  Project 4 - Final Project
 // Date:        12/03/15
 // Description: This is used to represent the X and Y coordinates of a given point as
-//              percentages of the width and height of the window. 
+//              percentages of the width and height of the window.
 
 public class ScaledPoint
 {
@@ -19,12 +19,11 @@ public class ScaledPoint
         xScaler = 0;
         yScaler = 0;
     }
-    
 
     public ScaledPoint(double xScaler, double yScaler)
     // PRE:  xScaler and yScaler must be values between 0 and 1 (inclusive).
     // POST: This creates an object of ScaledPoint with scaledX set to xScaler and yScaler
-    //       set to yScaler. 
+    //       set to yScaler.
     {
         this.xScaler = xScaler;
         this.yScaler = yScaler;

@@ -125,7 +125,8 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         switch (store)
         {
             case 0:
-                drawGradient(g, new Color(180, 80, 80), new Color(20, 0, 0), 0, 0, getWidth(), getHeight());
+                drawGradient(g, new Color(180, 80, 80), new Color(20, 0, 0), 0, 0, getWidth(), getHeight()/2);
+                drawGradient(g, new Color(20, 0, 0), new Color(180, 80, 80), 0, getHeight()/2, getWidth(), getHeight()/2);
                 break;
                 
             case 1:
@@ -231,14 +232,116 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     
     private void drawStoreMessage(Graphics g)
     {
+        int x1;
+        int y1;
+        int x2;
+        int y2;
+        int width;
+        int height;
+        int numLines;
+        String message;
+        
+        x1 = ScaledPoint.scalerToX(storeMessage[0].getXScaler()+0.01);
+        y1 = ScaledPoint.scalerToY(storeMessage[0].getYScaler()+0.01);
+        x2 = ScaledPoint.scalerToX(storeMessage[1].getXScaler()-0.01);
+        y2 = ScaledPoint.scalerToY(storeMessage[1].getYScaler()-0.01);
+        width = x2 - x1;
+        height = y2 - y1;
+        
         drawRoundedRect(g, storeMessage, Color.WHITE);
-        drawWrappedString(g, "Welcome to my store! You won't find better deals elsewhere.", 0, 0, 200, 200);
+        
+        numLines = 1;
+        
+        switch(store)
+        {
+            case 0:
+                message = "If yer lookin' for a weapon, you've come to the right place.";
+                break;
+                
+            case 1:
+                message = "Welcome! You'll not find tougher steel elsewhere.";
+                break;
+                
+            case 2:
+                message = "Come! I guarentee you'll find something that catches your eye!";
+                break;
+                
+            case 3:
+                message = "Some say that many of my goods are trash... They're right.";
+                break;
+            
+            default:
+                message = "I don't know how you got here...";
+        }
+        
+        while( !(drawWrappedString(g, message, numLines++, x1, y1, width, height)) );
+        
     }
     
-    private void drawWrappedString(Graphics g, String message, int x, int y, int width, int height)
+    private boolean drawWrappedString(Graphics g, String message, int lines, int x, int y, int width, int height)
     {
+        int lineHeight;             //The height of an individual line.
+        int lineWidth;              //The width of the current line.
+        int currentLine;            //The current line.
+        int[] yCoordinates;         //The y coordinates of the lines to be printed.
+        String[] words;             //The array of words to be printed.
+        String[] messages;          //The messages to be printed per line.
+        String lineMessage;         //The message for an individual line.
+        Font font;                  //The font to be used.
         
+        lineHeight = (int)((double)height/(double)lines*0.9);
+        yCoordinates = new int[lines];
+        yCoordinates[0] = y + lineHeight;
         
+        for(int i = 1; i < lines; i++)
+        {
+            yCoordinates[i] = (int)(yCoordinates[i-1] + (double)lineHeight/0.9);
+        }
+        
+        currentLine = 0;
+        words = message.split(" ");        
+        messages = new String[lines];       
+        lineMessage = "";
+        font = getFont(" ", getWidth(), lineHeight, FONTNAME, FONTSTYLE);
+        g.setFont(font);
+                
+        for(String word : words)
+        {
+            if(currentLine >= lines)
+            {
+                return false;
+            }
+            
+            lineWidth = getFontMetrics(font).stringWidth(lineMessage + " " + word);
+            
+            if(lineWidth > width)
+            {
+                messages[currentLine++] = lineMessage;
+                lineMessage = word;
+            }
+            
+            else
+            {
+                lineMessage += " " + word;
+            }           
+        }
+        
+        if(currentLine >= lines)
+        {
+            return false;
+        }
+        
+        messages[currentLine] = lineMessage;
+        
+        for(int i = 0; i < messages.length; i++)
+        {
+            if(messages[i] != null)
+            {
+                g.drawString(messages[i], x, yCoordinates[i]);               
+            }            
+        }
+
+        return true;
     }
     
     private void drawRoundedRect(Graphics g, ScaledPoint[] object, Color color)
