@@ -18,13 +18,14 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     public static final int FONTSTYLE = Font.PLAIN;   //The font style to be used.    
     public static final int ITEMSPERPAGE = 10;        //The number of items per page.
     public static final int NUMSTORES = 4;            //The number of stores.
+    public static final String[] SORTOPTIONS = {"Alpha: Ascending", "Alpha: Decending", "Price: Low to High", "Price: High to Low"};
     
-    private int itemSelected;                       //Identifies which item was selected in the menu.
-    private int currentPage;                        //The current page.
-    private int totalPages;                         //The total number of pages.
-    private boolean mode;                           //The mode (buy/sell) for the store.
-    private int player;                             //The current player.
-    private int store;                              //The current store.
+    private int itemSelected;                 //Identifies which item was selected in the menu.
+    private int currentPage;                  //The current page.
+    private int totalPages;                   //The total number of pages.
+    private boolean mode;                     //The mode (buy/sell) for the store.
+    private int player;                       //The current player.
+    private int store;                        //The current store.
     
     private CustomButton buyTab;              //The button for the buy tab.
     private CustomButton sellTab;             //The button for the sell tab.
@@ -155,23 +156,23 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         switch (store)    //initialize file path to image based on store
         {
             case 0:
-                filePath = ".\\images\\weaponSmith.jpg";
+                filePath = ".\\rsc\\images\\weaponSmith.jpg";
                 break;
                 
             case 1:
-                filePath = ".\\images\\armorSmith.jpg";
+                filePath = ".\\rsc\\images\\armorSmith.jpg";
                 break;
               
             case 2:
-                filePath = ".\\images\\accessoryMerchant.jpg";
+                filePath = ".\\rsc\\images\\accessoryMerchant.jpg";
                 break;
                 
             case 3:
-                filePath = ".\\images\\generalMerchant.png";
+                filePath = ".\\rsc\\images\\generalMerchant.png";
                 break;
                 
             default:
-                filePath = ".\\images\\generalMerchant.png";
+                filePath = ".\\rsc\\images\\generalMerchant.png";
         }
         
         Drawing.drawImage(g, x, y, width, height, filePath);
@@ -424,7 +425,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         iconX = x1+(int)(width*.01);
         iconY = y1+(int)(height*.1);
         iconLength = (int)(height*.8);
-        iconPath = ".\\images\\sword.png";
+        iconPath = ".\\rsc\\images\\sword.png";
         Drawing.drawImage(g, iconX, iconY, iconLength, iconLength, iconPath);
         
         itemNameX = iconX + (int)(iconLength*1.5);
@@ -533,6 +534,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         ScaledPoint[] buyTabPos;            //The scaled points for the buy tab.
         ScaledPoint[] sellTabPos;           //The scaled points for the sell tab.
         ScaledPoint[] nextStorePos;         //The scaled points for the next store button.
+        ScaledPoint[] sortPos;              //The scaled points for the sort button.
         
         buySellButtonPos = new ScaledPoint[2];
         buySellButtonPos[0] = new ScaledPoint(0.25, .90);
@@ -550,19 +552,24 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         rightTab = new CustomButton("rightTab", "NEXT", rightTabPos);
         
         buyTabPos = new ScaledPoint[2];
-        buyTabPos[0] = new ScaledPoint(0.19, .14);
-        buyTabPos[1] = new ScaledPoint(0.29, .19);
-        buyTab = new CustomButton("buyTab", "SHOP", buyTabPos);
+        buyTabPos[0] = new ScaledPoint(0.02, .147);
+        buyTabPos[1] = new ScaledPoint(0.12, .197);
+        buyTab = new CustomButton("buyTab", "BUY", buyTabPos);
         
         sellTabPos = new ScaledPoint[2];
-        sellTabPos[0] = new ScaledPoint(0.31, .14);
-        sellTabPos[1] = new ScaledPoint(0.41, .19);
+        sellTabPos[0] = new ScaledPoint(0.12, .147);
+        sellTabPos[1] = new ScaledPoint(0.22, .197);
         sellTab = new CustomButton("sellTab", "SELL", sellTabPos);
         
         nextStorePos = new ScaledPoint[2];
         nextStorePos[0] = new ScaledPoint(0.84, .015);
         nextStorePos[1] = new ScaledPoint(0.99, .085);
         new CustomButton("nextStore", "NEXT STORE", nextStorePos);
+        
+        sortPos = new ScaledPoint[2];
+        sortPos[0] = new ScaledPoint(0.47, .147);
+        sortPos[1] = new ScaledPoint(0.57, .197);
+        new CustomButton("sort", "SORT", sortPos);
     }
     
     private void switchStore(int store)
@@ -591,23 +598,23 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         switch(store)   //create file path for audio associated with store
         {
             case -1:
-                filePath = ".\\audio\\click.wav";
+                filePath = ".\\rsc\\audio\\click.wav";
                 break;
                 
             case 0:
-                filePath = ".\\audio\\weaponSmith.wav";
+                filePath = ".\\rsc\\audio\\weaponSmith.wav";
                 break;
                 
             case 1:
-                filePath = ".\\audio\\armorSmith.wav";
+                filePath = ".\\rsc\\audio\\armorSmith.wav";
                 break;
                 
             case 2:
-                filePath = ".\\audio\\accessoryMerchant.wav";
+                filePath = ".\\rsc\\audio\\accessoryMerchant.wav";
                 break;
             
             default:
-                filePath = ".\\audio\\generalMerchant.wav";
+                filePath = ".\\rsc\\audio\\generalMerchant.wav";
         }
         
         audioFile = null;   
@@ -698,6 +705,12 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 }
                 
                 switchStore(store);
+                break;
+                
+            case "sort":
+                //something
+                option = JOptionPane.showOptionDialog(this, "Sort by:", "Sort", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, SORTOPTIONS, null);
+                
                 break;
                 
             default:
