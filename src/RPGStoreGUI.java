@@ -156,23 +156,23 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         switch (store)    //initialize file path to image based on store
         {
             case 0:
-                filePath = ".\\rsc\\images\\weaponSmith.jpg";
+                filePath = ".\\images\\weaponSmith.jpg";
                 break;
                 
             case 1:
-                filePath = ".\\rsc\\images\\armorSmith.jpg";
+                filePath = ".\\images\\armorSmith.jpg";
                 break;
               
             case 2:
-                filePath = ".\\rsc\\images\\accessoryMerchant.jpg";
+                filePath = ".\\images\\accessoryMerchant.jpg";
                 break;
                 
             case 3:
-                filePath = ".\\rsc\\images\\generalMerchant.png";
+                filePath = ".\\images\\generalMerchant.png";
                 break;
                 
             default:
-                filePath = ".\\rsc\\images\\generalMerchant.png";
+                filePath = ".\\images\\generalMerchant.png";
         }
         
         Drawing.drawImage(g, x, y, width, height, filePath);
@@ -425,7 +425,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         iconX = x1+(int)(width*.01);
         iconY = y1+(int)(height*.1);
         iconLength = (int)(height*.8);
-        iconPath = ".\\rsc\\images\\sword.png";
+        iconPath = ".\\images\\sword.png";
         Drawing.drawImage(g, iconX, iconY, iconLength, iconLength, iconPath);
         
         itemNameX = iconX + (int)(iconLength*1.5);
@@ -598,23 +598,23 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         switch(store)   //create file path for audio associated with store
         {
             case -1:
-                filePath = ".\\rsc\\audio\\click.wav";
+                filePath = ".\\audio\\click.wav";
                 break;
                 
             case 0:
-                filePath = ".\\rsc\\audio\\weaponSmith.wav";
+                filePath = ".\\audio\\weaponSmith.wav";
                 break;
                 
             case 1:
-                filePath = ".\\rsc\\audio\\armorSmith.wav";
+                filePath = ".\\audio\\armorSmith.wav";
                 break;
                 
             case 2:
-                filePath = ".\\rsc\\audio\\accessoryMerchant.wav";
+                filePath = ".\\audio\\accessoryMerchant.wav";
                 break;
             
             default:
-                filePath = ".\\rsc\\audio\\generalMerchant.wav";
+                filePath = ".\\audio\\generalMerchant.wav";
         }
         
         audioFile = null;   
