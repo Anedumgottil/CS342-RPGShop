@@ -17,6 +17,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     public static final String FONTNAME = "Verdana";  //The font to be used.
     public static final int FONTSTYLE = Font.PLAIN;   //The font style to be used.    
     public static final int ITEMSPERPAGE = 10;        //The number of items per page.
+    public static final int NUMSTORES = 4;            //The number of stores.
     
     private int itemSelected;                       //Identifies which item was selected in the menu.
     private int currentPage;                        //The current page.
@@ -30,7 +31,12 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     private CustomButton leftTab;             //The button for the left tab.
     private CustomButton rightTab;            //The button for the right tab.
     private CustomButton buySellButton;       //The button for the buy/sell button.
+    
     private ScaledPoint[] inventoryPos;       //The position of the inventory box.
+    private ScaledPoint[] storeImage;         //The scaled points for the store image.
+    private ScaledPoint[] nameLocation;       //The scaled points for the store name.  
+    private ScaledPoint[] storeMessagePos;    //The scaled points for the dialogue box.
+    private ScaledPoint[][] itemPositions;    //The positions of each item box.
     
     public RPGStoreGUI()
     //  POST: Constructs a RPGStoreGUI object. Initializes location of all GUI elements.
@@ -48,7 +54,21 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         
         inventoryPos = new ScaledPoint[2];
         inventoryPos[0] = new ScaledPoint(0.02, .2);
-        inventoryPos[1] = new ScaledPoint(0.57, .84);
+        inventoryPos[1] = new ScaledPoint(0.57, .84);        
+        
+        storeImage = new ScaledPoint[2];
+        storeImage[0] = new ScaledPoint(0.6, .11);
+        storeImage[1] = new ScaledPoint(0.995, .60);   
+        
+        nameLocation = new ScaledPoint[2];        
+        nameLocation[0] = new ScaledPoint(0.005, 0.005);
+        nameLocation[1] = new ScaledPoint(0.8, .1);
+        
+        storeMessagePos = new ScaledPoint[2];
+        storeMessagePos[0] = new ScaledPoint(0.6, .61);
+        storeMessagePos[1] = new ScaledPoint(0.995, .80);
+        
+        itemPositions = initializeItemPositions();
     }
     
     @Override
@@ -64,8 +84,15 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         drawStoreImage(g);
         drawStoreMessage(g);
         drawInventory(g);
+        drawBalance(g);
                 
-        //Draw buttons
+        deactivateButtons();
+        CustomButton.draw();
+    }
+    
+    private void deactivateButtons()
+    //  POST: Deactivates buttons that should not be pressed.
+    {
         if(currentPage == 0)    //if we are at the first page, disable leftTab
         {
             leftTab.deactivate();
@@ -86,10 +113,27 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             rightTab.activate();
         }
         
-        CustomButton.draw();
+        if(itemSelected == -1)      //if no item has been selected
+        {
+            buySellButton.deactivate();
+        }
         
-        g.setColor(Color.WHITE);
-        g.drawString("Current item: " + itemSelected, 100, getHeight()/2);
+        else    //otherwise activate it
+        {
+            buySellButton.activate();
+        }
+        
+        if(!mode)   //if we are in buying mode
+        {
+            buyTab.deactivate();
+            sellTab.activate();
+        }
+        
+        else    //if we are in selling mode
+        {
+            sellTab.deactivate();
+            buyTab.activate();
+        }
     }
     
     private void drawStoreImage(Graphics g)
@@ -98,11 +142,15 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     //        All images should be located in the \images\ directory.
     {
         String filePath;                //the image file path
-        ScaledPoint[] storeImage;       //The scaled points for the store image.
+        int x;                          //x coordinate of upper-right corner of image.
+        int y;                          //y coordinate of upper-right corner of image.
+        int width;                      //width of image
+        int height;                     //height of image
         
-        storeImage = new ScaledPoint[2];
-        storeImage[0] = new ScaledPoint(0.6, .11);
-        storeImage[1] = new ScaledPoint(0.995, .60);
+        x = storeImage[0].getScaledX();
+        y = storeImage[0].getScaledY();
+        width = storeImage[1].getScaledX() - storeImage[0].getScaledX();
+        height = storeImage[1].getScaledY() - storeImage[0].getScaledY();
         
         switch (store)    //initialize file path to image based on store
         {
@@ -126,7 +174,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 filePath = ".\\images\\generalMerchant.png";
         }
         
-        Drawing.drawImage(g, storeImage, filePath);
+        Drawing.drawImage(g, x, y, width, height, filePath);
     }
     
     private void drawStoreBG(Graphics g)
@@ -164,12 +212,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         int rectWidth;                      //The width of the drawing area.
         int rectHeight;                     //The height of the drawing area.
         String storeName;                   //The name of the store.
-        Font font;                          //The font to be used.
-        ScaledPoint[] nameLocation;         //The scaled points for the store name.     
-        
-        nameLocation = new ScaledPoint[2];        
-        nameLocation[0] = new ScaledPoint(0.005, 0.005);
-        nameLocation[1] = new ScaledPoint(0.995, .1);
+        Font font;                          //The font to be used.        
         
         rectWidth = nameLocation[1].getScaledX() - nameLocation[0].getScaledX();
         rectHeight = nameLocation[1].getScaledY() - nameLocation[0].getScaledY();
@@ -212,11 +255,6 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         int height;                     //Height of dialogue box.
         int numLines;                   //Number of lines in dialogue box.
         String message;                 //Message to be printed.
-        ScaledPoint[] storeMessagePos;  //Position of dialogue box.
-        
-        storeMessagePos = new ScaledPoint[2];
-        storeMessagePos[0] = new ScaledPoint(0.6, .61);
-        storeMessagePos[1] = new ScaledPoint(0.995, .80);
         
         x1 = ScaledPoint.scalerToX(storeMessagePos[0].getXScaler()+0.01);
         y1 = ScaledPoint.scalerToY(storeMessagePos[0].getYScaler()+0.01);
@@ -250,10 +288,53 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         }
         
         numLines = 1;
-        while( !(Drawing.drawWrappedString(g, message, numLines++, x1, y1, width, height)) ); //while we need more lines for the message
-        
+        while( !(Drawing.drawWrappedString(g, message, numLines++, x1, y1, width, height)) ); //while we need more lines for the message      
     }
 
+    private void drawBalance(Graphics g)
+    //  POST: Draws the balance of the current player
+    {
+        Font font;
+        String message;
+        Color oldColor;
+        int x1;
+        int y1;
+        int x2;
+        int y2;
+        int width;
+        int height;
+        int offset;
+        int balance;
+        
+        balance = 4000;
+        oldColor = g.getColor();
+        
+        x1 = ScaledPoint.scalerToX(0.72);
+        y1 = ScaledPoint.scalerToY(0.81);
+        x2 = ScaledPoint.scalerToX(0.88);
+        y2 = ScaledPoint.scalerToY(0.86);
+        width = x2-x1;
+        height = y2-y1;
+        message = "Balance:";
+        font = Drawing.getFont(message, width, height, FONTNAME, FONTSTYLE);
+        offset = (width - getFontMetrics(font).stringWidth(message))/2;
+        g.setColor(Color.WHITE);
+        g.drawString(message, x1+offset, y2);
+
+        x1 = ScaledPoint.scalerToX(0.72);
+        y1 = ScaledPoint.scalerToY(0.865);
+        x2 = ScaledPoint.scalerToX(0.88);
+        y2 = ScaledPoint.scalerToY(0.915);
+        width = x2-x1;
+        height = y2-y1;
+        message = "$" + Integer.toString(balance);
+        font = Drawing.getFont(message, width, height, FONTNAME, FONTSTYLE);
+        offset = (width - getFontMetrics(font).stringWidth(message))/2;
+        g.drawString(message, x1+offset, y2);
+    
+        g.setColor(oldColor);
+    }
+    
     private void drawInventory(Graphics g)
     //  PRE:  g must be initialized.
     //  POST: Draws the inventory of the store if mode == 0, else draws the players inventory.
@@ -306,12 +387,62 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 g2.drawRect(x1, itemY, width, itemHeight);
             }
             
-            drawItem(g2, i, x1, itemY, width, itemHeight);
+            drawItem(g2, i);
         }
     }
-    
-    private void drawItem(Graphics g, int item, int x, int y, int width, int height)
+        
+    private void drawItem(Graphics g, int item)
     {
+        Font font;          //The font to be used.
+        int x1;             //The first x coordinate of drawing area.
+        int y1;             //The first y coordinate of drawing area.
+        int x2;             //The second x coordinate of drawing area.
+        int y2;             //The second y coordinate of drawing area.
+        int width;          //Width of drawing area.
+        int height;         //Height of drawing area.
+        
+        int iconX;          //x coordinate of the icon.
+        int iconY;          //y coordinate of the icon.
+        int iconLength;     //Length of the icon.
+        String iconPath;    //The file path to the icon.
+        
+        int itemNameX;      //The x coordinate of the item name.
+        int itemNameLength; //The length of the item name.
+        String itemName;    //The name of the item.
+        
+        int itemPriceX;     //The x coordinate of the item price.
+        int itemPriceWidth; //The width of the item price.
+        String itemPrice;   //The price of the item.
+        
+        x1 = itemPositions[item][0].getScaledX();
+        x2 = itemPositions[item][1].getScaledX();
+        y1 = itemPositions[item][0].getScaledY();
+        y2 = itemPositions[item][1].getScaledY();        
+        width = x2 - x1;
+        height = y2 - y1;  
+        
+        iconX = x1+(int)(width*.01);
+        iconY = y1+(int)(height*.1);
+        iconLength = (int)(height*.8);
+        iconPath = ".\\images\\sword.png";
+        Drawing.drawImage(g, iconX, iconY, iconLength, iconLength, iconPath);
+        
+        itemNameX = iconX + (int)(iconLength*1.5);
+        itemNameLength = (int)(width*0.6);
+        itemName = "Rusty Spoon";
+        font = Drawing.getFont(itemName, itemNameLength, (int)(iconLength*0.8), FONTNAME, FONTSTYLE);
+        g.setFont(font);
+        g.setColor(Color.WHITE);
+        g.drawString(itemName, itemNameX, iconY+(int)(iconLength*0.9));
+        
+        itemPriceX = x1 + (int)(width * 0.8);
+        itemPriceWidth = (int)(width*0.15);
+        itemPrice = "$100";
+        font = Drawing.getFont(itemPrice, itemPriceWidth, iconLength, FONTNAME, FONTSTYLE);
+        g.setFont(font);
+        g.setColor(Color.WHITE);
+        g.drawString(itemPrice, itemPriceX, iconY+(int)(iconLength*.9));
+        
         return;
     }
     
@@ -324,7 +455,6 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         int y1;                         //Upper-left y coordinate.
         int x2;                         //Bottom-right x coordinate.
         int y2;                         //Bottom-right y coordinate.
-        int width;                      //Width of the inventory box.
         int height;                     //Height of the inventory box.
         int itemHeight;                 //The height of an item box.
         int itemY;                      //The y coordinate of the item.
@@ -339,7 +469,6 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             return;
         }
         
-        width = x2 - x1;
         height = y2 - y1;
         
         while(height % ITEMSPERPAGE != 0)  //ensure that the item boxes do not fall short of the window
@@ -361,6 +490,40 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         }
     }
     
+    private ScaledPoint[][] initializeItemPositions()
+    //  POST: FCTVAL == ScaledPoint[][] of item positions based on the inventory window and ITEMSPERPAGE
+    {
+        ScaledPoint[][] itemPositions;  //Array of item positions to be returned.
+        ScaledPoint item;               //Position of the current item.
+        int x1;                         //First x coordinate.
+        int y1;                         //First y coordinate.
+        int x2;                         //Second x coordinate.
+        int y2;                         //Second y coordinate.
+        int windowHeight;               //Height of the drawing window.
+        int itemHeight;                 //Height of an individual item pane.
+
+        windowHeight = inventoryPos[1].getScaledY() - inventoryPos[0].getScaledY();        
+        
+        itemHeight = windowHeight / ITEMSPERPAGE;
+        itemPositions = new ScaledPoint[ITEMSPERPAGE][];
+                
+        for(int i = 0; i < ITEMSPERPAGE; i++)  //for each item
+        {
+            x1 = inventoryPos[0].getScaledX();
+            x2 = inventoryPos[1].getScaledX();
+            y1 = inventoryPos[0].getScaledY() + (itemHeight * i) + i/2;
+            y2 = inventoryPos[0].getScaledY() + (itemHeight * (i+1) + i/2);
+            
+            itemPositions[i] = new ScaledPoint[2];
+            item = new ScaledPoint(x1, y1);
+            itemPositions[i][0] = item;
+            item = new ScaledPoint(x2, y2);
+            itemPositions[i][1] = item;
+        }
+        
+        return itemPositions;
+    }
+    
     private void initializeButtons()
     //  POST: Initializes all GUI buttons.
     {      
@@ -369,6 +532,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         ScaledPoint[] rightTabPos;          //The scaled points for the right tab.
         ScaledPoint[] buyTabPos;            //The scaled points for the buy tab.
         ScaledPoint[] sellTabPos;           //The scaled points for the sell tab.
+        ScaledPoint[] nextStorePos;         //The scaled points for the next store button.
         
         buySellButtonPos = new ScaledPoint[2];
         buySellButtonPos[0] = new ScaledPoint(0.25, .90);
@@ -388,12 +552,17 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         buyTabPos = new ScaledPoint[2];
         buyTabPos[0] = new ScaledPoint(0.19, .14);
         buyTabPos[1] = new ScaledPoint(0.29, .19);
-        buyTab = new CustomButton("buyTab", "BUY", buyTabPos);
+        buyTab = new CustomButton("buyTab", "SHOP", buyTabPos);
         
         sellTabPos = new ScaledPoint[2];
         sellTabPos[0] = new ScaledPoint(0.31, .14);
         sellTabPos[1] = new ScaledPoint(0.41, .19);
         sellTab = new CustomButton("sellTab", "SELL", sellTabPos);
+        
+        nextStorePos = new ScaledPoint[2];
+        nextStorePos[0] = new ScaledPoint(0.84, .015);
+        nextStorePos[1] = new ScaledPoint(0.99, .085);
+        new CustomButton("nextStore", "NEXT STORE", nextStorePos);
     }
     
     private void switchStore(int store)
@@ -461,22 +630,16 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     @Override
     public void mouseClicked(MouseEvent arg0) 
     {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void mouseEntered(MouseEvent arg0) 
     {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void mouseExited(MouseEvent arg0) 
     {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
@@ -484,6 +647,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     {
         CustomButton buttonPressed;     //Button that was pressed.
         String buttonName;              //The name of the button.
+        int option;                     //Option chosen by user.
         
         wasItemSelected(e.getX(), e.getY());
         buttonPressed = CustomButton.wasPressed(e.getX(), e.getY());
@@ -494,6 +658,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         }
         
         buttonName = buttonPressed.getName();
+        playAudio(-1);
         
         switch(buttonName)      //handle event associated with button name
         {
@@ -516,12 +681,28 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 break;
                 
             case "button":
+                option = JOptionPane.showConfirmDialog(this, ((!mode)?"Buy ":"Sell ") + "for " + "$100?");
+                
+                if(option == 0)     //if they choose to buy/sell
+                {
+                    
+                }
+                
                 itemSelected = -1;
+                break;
+                
+            case "nextStore":
+                if(++store == NUMSTORES)    //if we're on the last store, loop around
+                {
+                    store = 0;
+                }
+                
+                switchStore(store);
                 break;
                 
             default:
         }
-        playAudio(-1);
+        
         repaint();
     }
 
@@ -535,6 +716,8 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     @Override
     public void keyPressed(KeyEvent e) 
     {       
+        int option;     //The option the user selected.
+        
         switch(e.getKeyCode())              //handle event associated with key
         {
             case KeyEvent.VK_F1:            //if f1 was pressed
@@ -601,6 +784,18 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 break;
                 
             case KeyEvent.VK_ENTER:        //if enter was pressed
+                if(itemSelected == -1)     //if no item was selected
+                {
+                    break;
+                }
+                
+                option = JOptionPane.showConfirmDialog(this, ((!mode)?"Buy ":"Sell ") + "for " + "$100?");
+                
+                if(option == 0)     //if they choose to buy/sell
+                {
+                    
+                }
+                
                 itemSelected = -1;
                 break;
                 
@@ -614,13 +809,10 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     @Override
     public void keyReleased(KeyEvent arg0) 
     {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void keyTyped(KeyEvent e) 
-    {
-        
+    {        
     }
 }

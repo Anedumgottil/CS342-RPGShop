@@ -14,21 +14,12 @@ import javax.swing.JPanel;
 
 public abstract class Drawing {
         
-    public static boolean drawImage(Graphics g, ScaledPoint[] position, String filePath)
-    //  PRE:  g, position and filePath must be initialized. Position must only include non-negative values.
-    //  POST: Attempts to open the image located at the specified file path and draw it at
+    public static boolean drawImage(Graphics g, int x, int y, int width, int height, String filePath)
+    //  PRE:  g and filePath must be initialized. x, y, width and height must be non-negative
+    //  POST: Attempts to open the image located at the specified file path and draw it within
     //        the given position. FCTVAL == true if successful, false otherwise.
     {
         BufferedImage image;        //image to be drawn
-        int x;                      //image x coordinate
-        int y;                      //image y coordinate
-        int width;                  //width of image
-        int height;                 //height of image
-        
-        x = position[0].getScaledX();
-        y = position[0].getScaledY();
-        width = position[1].getScaledX() - position[0].getScaledX();
-        height = position[1].getScaledY() - position[0].getScaledY();
         
         image = null;
         
