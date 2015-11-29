@@ -12,20 +12,14 @@ public class RPGStoreFrame
     
     public static void main(String[] args) 
     {
-        SwingUtilities.invokeLater(new Runnable() 
-        {
-            public void run()
-            {
-                createFrame();
-            }
-        });
+        createFrame();
     }
     
     private static void createFrame() 
     // POST: This method creates the GUI.
     {
-        JFrame      frame;  // frame for GUI
-        RPGStoreGUI display; // panel where all our information is displayed
+        JFrame      frame;   //frame for GUI
+        RPGStoreGUI display; //the RPG store display
         
         frame = new JFrame("RPG Store");
         display = new RPGStoreGUI();

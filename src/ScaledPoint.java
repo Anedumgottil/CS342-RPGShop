@@ -1,7 +1,7 @@
 // Programmer:  Michael Baccia, Tran Dao, Anthony Nedumgottil, Aaron Zheng
 // Assignment:  Project 4 - Final Project
 // Date:        12/03/15
-// Description: This is used to represent the X and Y coordinates of a given point as
+// Description: This class is used to represent the X and Y coordinates of a given point as
 //              percentages of the width and height of the window.
 
 public class ScaledPoint
@@ -243,15 +243,15 @@ public class ScaledPoint
     // PRE:  scaler should be a value >= 0 and <= 1.
     // POST: FCTVAL == scaler*windowWidth, or 0 when scaler < 0, 1 if scaler > 1.
     {
-        double value;          //value to be returned
+        double value;   //value to be returned
         value = scaler;
         
-        if(value > 1)
+        if(value > 1)   //if scaler is outside of upper bound
         {
             value = 1;
         }
         
-        if(value < 0)
+        if(value < 0)   //if scaler is outside of lower bound
         {
             value = 0;
         }
@@ -263,15 +263,15 @@ public class ScaledPoint
     // PRE:  scaler should be a value >= 0 and <= 1.
     // POST: FCTVAL == scaler*windowHeight, or 0 when scaler < 0, 1 if scaler > 1.
     {
-        double value;          //value to be returned
+        double value;    //value to be returned
         value = scaler;
         
-        if(value > 1)
+        if(value > 1)    //if scaler is outside of upper bound
         {
             value = 1;
         }
         
-        if(value < 0)
+        if(value < 0)    //if scaler is outside of lower bound
         {
             value = 0;
         }
