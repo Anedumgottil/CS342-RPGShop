@@ -41,6 +41,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     private ScaledPoint[] storeMessagePos;    //The scaled points for the dialogue box.
     private ScaledPoint[][] itemPositions;    //The positions of each item box.
     
+    private int k;                            //The number of rows returned from query
     public RPGStoreGUI()
     //  POST: Constructs a RPGStoreGUI object. Initializes location of all GUI elements.
     //        itemSelected is set to -1 (none) and mode is set to false (buy).
@@ -281,7 +282,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 break;
                 
             case 2:
-                message = "Come! I guarentee you'll find something that catches your eye!";
+                message = "Come! I guarantee you'll find something that catches your eye!";
                 break;
                 
             case 3:
@@ -385,17 +386,45 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         
         
         int count = 0;
-        for(int i = 0; i < ITEMSPERPAGE; i++)  //draw each item into the window
+        if( currentPage == 0)
         {
-            itemY = y1 + (itemHeight)*i;
-            
-            if(itemSelected == i)  //if the item was selected, highlight it
+            for(int i = 0; i < ITEMSPERPAGE; i++)  //draw each item into the window
             {
-                g2.drawRect(x1, itemY, width, itemHeight);
+                itemY = y1 + (itemHeight)*i;
+
+                if(itemSelected == i)  //if the item was selected, highlight it
+                {
+                    g2.drawRect(x1, itemY, width, itemHeight);
+                }
+
+                drawItem(g2, i, count);
+                System.out.println("COUNT IS " + count);
+                count++;
             }
-            drawItem(g2, i, count);
-            count++;
         }
+        
+        if (currentPage == 1)
+        {
+            count = currentPage * ITEMSPERPAGE;
+            for(int i = 0; i < ITEMSPERPAGE; i++)  //draw each item into the window
+            {
+                itemY = y1 + (itemHeight)*i;
+
+                if(itemSelected == i)  //if the item was selected, highlight it
+                {
+                    g2.drawRect(x1, itemY, width, itemHeight);
+                }
+                
+                if(count > k - 1)
+                {
+                    break;
+                }
+                drawItem(g2, i, count);
+                System.out.println("COUNT IS " + count);
+                count++;
+            }
+        }
+        
     }
         
     private void drawItem(Graphics g, int item, int count)
@@ -427,32 +456,43 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         y2 = itemPositions[item][1].getScaledY();        
         width = x2 - x1;
         height = y2 - y1;  
+         
+        itemName = "";
+        itemPrice = "";
+        iconPath = "";
         
+         switch(store)
+        {
+            case 0:
+                itemName = (getUserItems("Weapon"))[count][0];
+                itemPrice = (getUserItems("Weapon"))[count][1];
+                iconPath = (getUserItems("Weapon"))[count][2];
+                break;
+            case 1:
+                itemName = (getUserItems("ArmorSmith"))[count][0];
+                itemPrice = (getUserItems("ArmorSmith"))[count][1];
+                iconPath = (getUserItems("ArmorSmith"))[count][2];
+                break;
+            case 2:
+                itemName = (getUserItems("Accessory"))[count][0];
+                itemPrice = (getUserItems("Accessory"))[count][1];
+                iconPath = (getUserItems("Accessory"))[count][2];
+                break;
+            case 3:
+                itemName = (getUserItems("General"))[count][0];
+                itemPrice = (getUserItems("General"))[count][1];
+                iconPath = (getUserItems("General"))[count][2];
+                break;
+        }
         iconX = x1+(int)(width*.01);
         iconY = y1+(int)(height*.1);
         iconLength = (int)(height*.8);
        
-        iconPath = ".\\images\\sword.png";
         Drawing.drawImage(g, iconX, iconY, iconLength, iconLength, iconPath);
         
         itemNameX = iconX + (int)(iconLength*1.5);
         itemNameLength = (int)(width*0.6);
-        itemName = "";
-        switch(store)
-        {
-            case 0:
-                itemName = (getUserItems("Weapon"))[count][0];
-                break;
-            case 1:
-                itemName = (getUserItems("ArmorSmith"))[count][0];
-                break;
-            case 2:
-                itemName = (getUserItems("Accessory"))[count][0];
-                break;
-            case 3:
-                itemName = (getUserItems("General"))[count][0];
-                break;
-        }
+      
         font = Drawing.getFont(itemName, itemNameLength, (int)(iconLength*0.8), FONTNAME, FONTSTYLE);
         g.setFont(font);
         g.setColor(Color.WHITE);
@@ -460,23 +500,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         
         itemPriceX = x1 + (int)(width * 0.8);
         itemPriceWidth = (int)(width*0.15);
-        itemPrice = "";
         
-        switch(store)
-        {
-            case 0:
-                itemPrice = (getUserItems("Weapon"))[count][1];
-                break;
-            case 1:
-                itemPrice = (getUserItems("ArmorSmith"))[count][1];
-                break;
-            case 2:
-                itemPrice = (getUserItems("Accessory"))[count][1];
-                break;
-            case 3:
-                itemPrice = (getUserItems("General"))[count][1];
-                break;
-        }
         font = Drawing.getFont(itemPrice, itemPriceWidth, iconLength, FONTNAME, FONTSTYLE);
         g.setFont(font);
         g.setColor(Color.WHITE);
@@ -619,7 +643,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         itemSelected = -1;
         mode = false;
         currentPage = 0;
-        totalPages = 3;
+        totalPages = 2;
         playAudio(store);
     }
     
@@ -726,6 +750,8 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 break;
                 
             case "button":
+                
+                /********************CHANGE TO FUNCTION CALL *********************/
                 option = JOptionPane.showConfirmDialog(this, ((!mode)?"Buy ":"Sell ") + "for " + "$100?");
                 
                 if(option == 0)     //if they choose to buy/sell
@@ -840,6 +866,8 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                     break;
                 }
                 
+                 
+                /********************CHANGE TO FUNCTION CALL *********************/
                 option = JOptionPane.showConfirmDialog(this, ((!mode)?"Buy ":"Sell ") + "for " + "$100?");
                 
                 if(option == 0)     //if they choose to buy/sell
@@ -880,7 +908,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         
         for(int i = 0; i < 10; i++)
         {
-            for(int j = 0; j < 2; j++)
+            for(int j = 0; j < 3; j++)
             {
                 System.out.println(results[i][j]);
             }
@@ -890,7 +918,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     
     public String[][] connect(String query ){
         String driver = "org.apache.derby.jdbc.ClientDriver";               //Driver for DB
-        String url ="jdbc:derby://localhost:1527/ShopDataBase";             //Url for DB
+        String url ="jdbc:derby://localhost:1527/GameShop";             //Url for DB
         String user = "root";                                               //Username for db
         String pass = "root";                                               //Password for db
         Connection myConnection;                                            //Connection obj to db
@@ -909,15 +937,14 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         stmt = myConnection.createStatement();                              //Create a new statement
         results = stmt.executeQuery(query);                             //Store the results of our query
         
-        int i = 0;
-        int j = 0;
+ 
+        k = 0;
         while(results.next())                                               //Itterate through the results set
         {
-            fulldata[i][1] = (results.getString("price"));
-            i++;
-            
-            fulldata[j][0] = (results.getString("item_name"));
-            j++;
+            fulldata[k][0] = (results.getString("item_name"));
+            fulldata[k][1] = (results.getString("price"));            
+            fulldata[k][2] = (results.getString("item_path"));
+            k++;
             
         }
         
