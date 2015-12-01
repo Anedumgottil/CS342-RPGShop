@@ -92,6 +92,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 
         deactivateButtons();
         CustomButton.draw();
+       
     }
     
     private void deactivateButtons()
@@ -430,6 +431,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         iconX = x1+(int)(width*.01);
         iconY = y1+(int)(height*.1);
         iconLength = (int)(height*.8);
+       
         iconPath = ".\\images\\sword.png";
         Drawing.drawImage(g, iconX, iconY, iconLength, iconLength, iconPath);
         
@@ -439,10 +441,16 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         switch(store)
         {
             case 0:
-                itemName = (getWeaps())[count];
+                itemName = (getUserItems("Weapon"))[count][0];
                 break;
             case 1:
-                itemName = (getArmor()) [count];
+                itemName = (getUserItems("ArmorSmith"))[count][0];
+                break;
+            case 2:
+                itemName = (getUserItems("Accessory"))[count][0];
+                break;
+            case 3:
+                itemName = (getUserItems("General"))[count][0];
                 break;
         }
         font = Drawing.getFont(itemName, itemNameLength, (int)(iconLength*0.8), FONTNAME, FONTSTYLE);
@@ -452,7 +460,23 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         
         itemPriceX = x1 + (int)(width * 0.8);
         itemPriceWidth = (int)(width*0.15);
-        itemPrice = "$100";
+        itemPrice = "";
+        
+        switch(store)
+        {
+            case 0:
+                itemPrice = (getUserItems("Weapon"))[count][1];
+                break;
+            case 1:
+                itemPrice = (getUserItems("ArmorSmith"))[count][1];
+                break;
+            case 2:
+                itemPrice = (getUserItems("Accessory"))[count][1];
+                break;
+            case 3:
+                itemPrice = (getUserItems("General"))[count][1];
+                break;
+        }
         font = Drawing.getFont(itemPrice, itemPriceWidth, iconLength, FONTNAME, FONTSTYLE);
         g.setFont(font);
         g.setColor(Color.WHITE);
@@ -699,7 +723,6 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 
             case "sellTab":
                 mode = true;
-                getAllUsers();   // user inventory pops up when sell is pressed 
                 break;
                 
             case "button":
@@ -844,166 +867,69 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     {        
     }
     
-    public void getAllUsers( ){
-        String driver = "org.apache.derby.jdbc.ClientDriver";               //Driver for DB
-        String url ="jdbc:derby://localhost:1527/ShopDataBase";             //Url for DB
-        String user = "root";                                               //Username for db
-        String pass = "root";                                               //Password for db
-        Connection myConnection;                                            //Connection obj to db
-        String testQuery;                                                   //Our Sql query
-        Statement stmt;                                                     //Statement to execute a result appon
-        ResultSet results;                                                  //A set containing the returned results 
-        
-        try{                                                                //Try connection to db
-        
-        Class.forName(driver).newInstance();                                //Create our db driver
-        
-        myConnection = DriverManager.getConnection(url, user , pass);       //Initalize our connection
-        
-        testQuery = "select * from users";                                  //Query to select all 'users' in users table
-        
-        stmt = myConnection.createStatement();                              //Create a new statement
-        results = stmt.executeQuery(testQuery);                             //Store the results of our query
-        
-        while(results.next())                                               //Itterate through the results set
-        {
-            //Print out every field in users [TEMP]
-           System.out.println(results.getInt("user_id") + ": " + results.getString("user_name") + ": "+ results.getInt("Balance"));
-        }
-        
-        results.close();                                                    //Close the ResultSet
-        stmt.close();                                                       //Close the statement
-        myConnection.close();                                               //Close the connection to db
-        
-        }catch(Exception e){                                                //Cannot connect to db
-            System.out.println("Error, something went horribly wrong!");
-        }
-    }
-    public String[] getWeaps( )
+    public String[][] getUserItems(String user_name)
     {
-        String driver = "org.apache.derby.jdbc.ClientDriver";               //Driver for DB
-        String url ="jdbc:derby://localhost:1527/ShopDataBase";             //Url for DB
-        String user = "root";                                               //Username for db
-        String pass = "root";                                               //Password for db
-        Connection myConnection;                                            //Connection obj to db
-        String testQuery;                                                   //Our Sql query
-        Statement stmt;                                                     //Statement to execute a result appon
-        ResultSet results;                                                  //A set containing the returned results 
-        String[] fulldata = new String[42];
-
-        try{                                                                //Try connection to db
-
-        Class.forName(driver).newInstance();                                //Create our db driver
-
-        myConnection = DriverManager.getConnection(url, user , pass);       //Initalize our connection
-
-        testQuery = "select * from Items where Item_Type = 'W'";              //Query to select all 'users' in users table
-
-        stmt = myConnection.createStatement();                              //Create a new statement
-        results = stmt.executeQuery(testQuery);                             //Store the results of our query
-
-        int i = 0;
-        while(results.next())                                               //Itterate through the results set
-        {
-           //Print out every field in users [TEMP]
-           //System.out.println(results.getInt("item_id") + ": " + results.getString("item_name") + ": "+ results.getString("item_type"));
-           fulldata[i] = (results.getString("item_name"));
-           i++;
-        }
+        String str = String.format("select * from items "
+                    + "inner join"
+                    + "("
+                    + "select * from users where user_name = '%s'"
+                    + ") AS temp "
+                    + "ON temp.user_id = items.owner_id",user_name);
         
-
-        results.close();                                                    //Close the ResultSet
-        stmt.close();                                                       //Close the statement
-        myConnection.close();                                               //Close the connection to db
-
-        }catch(Exception e){                                                //Cannot connect to db
-            System.out.println("Error, something went horribly wrong!");
+        String[][] results = connect(str);
+        
+        for(int i = 0; i < 10; i++)
+        {
+            for(int j = 0; j < 2; j++)
+            {
+                System.out.println(results[i][j]);
+            }
         }
-        return fulldata;
+        return results;
     }
     
-    public String[] getArmor( )
-    {
+    public String[][] connect(String query ){
         String driver = "org.apache.derby.jdbc.ClientDriver";               //Driver for DB
         String url ="jdbc:derby://localhost:1527/ShopDataBase";             //Url for DB
         String user = "root";                                               //Username for db
         String pass = "root";                                               //Password for db
         Connection myConnection;                                            //Connection obj to db
-        String testQuery;                                                   //Our Sql query
         Statement stmt;                                                     //Statement to execute a result appon
         ResultSet results;                                                  //A set containing the returned results 
-        String[] fulldata = new String[42];
-
+        String[][] fulldata = new String[10][10];
+        
         try{                                                                //Try connection to db
-
+        
         Class.forName(driver).newInstance();                                //Create our db driver
-
+        
         myConnection = DriverManager.getConnection(url, user , pass);       //Initalize our connection
-
-        testQuery = "select * from Items where Item_Type = 'A'";              //Query to select all 'users' in users table
-
+        
+                                             //Query to select all 'users' in users table
+        
         stmt = myConnection.createStatement();                              //Create a new statement
-        results = stmt.executeQuery(testQuery);                             //Store the results of our query
-
+        results = stmt.executeQuery(query);                             //Store the results of our query
+        
         int i = 0;
+        int j = 0;
         while(results.next())                                               //Itterate through the results set
         {
-           //Print out every field in users [TEMP]
-           //System.out.println(results.getInt("item_id") + ": " + results.getString("item_name") + ": "+ results.getString("item_type"));
-           fulldata[i] = (results.getString("item_name"));
-           i++;
+            fulldata[i][1] = (results.getString("price"));
+            i++;
+            
+            fulldata[j][0] = (results.getString("item_name"));
+            j++;
+            
         }
         
-
         results.close();                                                    //Close the ResultSet
         stmt.close();                                                       //Close the statement
         myConnection.close();                                               //Close the connection to db
-
+        
         }catch(Exception e){                                                //Cannot connect to db
+            System.out.println(e.toString());
             System.out.println("Error, something went horribly wrong!");
-        }
-        return fulldata;
-    }
-    public String[] getGeneral( )
-    {
-        String driver = "org.apache.derby.jdbc.ClientDriver";               //Driver for DB
-        String url ="jdbc:derby://localhost:1527/ShopDataBase";             //Url for DB
-        String user = "root";                                               //Username for db
-        String pass = "root";                                               //Password for db
-        Connection myConnection;                                            //Connection obj to db
-        String testQuery;                                                   //Our Sql query
-        Statement stmt;                                                     //Statement to execute a result appon
-        ResultSet results;                                                  //A set containing the returned results 
-        String[] fulldata = new String[42];
-
-        try{                                                                //Try connection to db
-
-        Class.forName(driver).newInstance();                                //Create our db driver
-
-        myConnection = DriverManager.getConnection(url, user , pass);       //Initalize our connection
-
-        testQuery = "select * from Items where Item_Type = 'G'";              //Query to select all 'users' in users table
-
-        stmt = myConnection.createStatement();                              //Create a new statement
-        results = stmt.executeQuery(testQuery);                             //Store the results of our query
-
-        int i = 0;
-        while(results.next())                                               //Itterate through the results set
-        {
-           //Print out every field in users [TEMP]
-           //System.out.println(results.getInt("item_id") + ": " + results.getString("item_name") + ": "+ results.getString("item_type"));
-           fulldata[i] = (results.getString("item_name"));
-           i++;
         }
         
-
-        results.close();                                                    //Close the ResultSet
-        stmt.close();                                                       //Close the statement
-        myConnection.close();                                               //Close the connection to db
-
-        }catch(Exception e){                                                //Cannot connect to db
-            System.out.println("Error, something went horribly wrong!");
-        }
         return fulldata;
     }
 }
