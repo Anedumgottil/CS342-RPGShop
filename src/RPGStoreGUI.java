@@ -405,7 +405,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         
         if (currentPage == 1)
         {
-            count = currentPage * ITEMSPERPAGE;
+            System.out.println("current start of new page" + count);
             for(int i = 0; i < ITEMSPERPAGE; i++)  //draw each item into the window
             {
                 itemY = y1 + (itemHeight)*i;

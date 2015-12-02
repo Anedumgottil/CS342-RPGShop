@@ -1,0 +1,114 @@
+CREATE TABLE ITEMS (
+ ITEM_ID SMALLINT,
+ ITEM_NAME VARCHAR(15), 
+ ITEM_TYPE VARCHAR(2), 
+ PRICE SMALLINT, 
+ OWNER_ID SMALLINT, 
+ ITEM_PATH VARCHAR(255),
+ PRIMARY KEY(ITEM_ID));
+
+CREATE TABLE USERS (USER_ID SMALLINT, USER_NAME VARCHAR(10), BALANCE SMALLINT);
+
+
+INSERT INTO ROOT.USERS (USER_ID, USER_NAME, BALANCE) 
+	VALUES (0, 'Player', 2000);
+INSERT INTO ROOT.USERS (USER_ID, USER_NAME, BALANCE) 
+	VALUES (1, 'ArmorSmith', 8000);
+INSERT INTO ROOT.USERS (USER_ID, USER_NAME, BALANCE) 
+	VALUES (2, 'Weapon', 8000);
+INSERT INTO ROOT.USERS (USER_ID, USER_NAME, BALANCE) 
+	VALUES (3, 'Accessory', 8000);
+INSERT INTO ROOT.USERS (USER_ID, USER_NAME, BALANCE) 
+	VALUES (4, 'General', 8000);
+
+
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (0, 'Wooden Sword', 'W', 50, 2, '.\\images\\sword.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (1, 'Iron Sword', 'W', 150, 2, '.\\images\\sword.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (2, 'Steel Sword', 'W', 250, 2, '.\\images\\sword.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (3, 'Crossbow', 'W', 300, 2, '.\\images\\bow_and_arrow.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (4, 'Doran''s Blade', 'W', 450, 2, '.\\images\\sword.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (5, 'Falchion', 'W', 1500, 2, '.\\images\\spear.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (6, 'Bronze Lance', 'W', 60, 2, '.\\images\\spear.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (7, 'Iron Lance', 'W', 160, 2, '.\\images\\spear.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (8, 'Steel Lance', 'W', 260, 2, '.\\images\\spear.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (9, 'SpellBook(F)', 'W', 400, 2, '.\\images\\spellbook.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (10, 'SpellBook(D)', 'W', 400, 2, '.\\images\\spellbook.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (11, 'SpellBook(W)', 'W', 400, 2, '.\\images\\spellbook.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (12, 'Blingtron', 'AS', 3000, 3, '.\\images\\blingtron.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (13, 'Magi Ring', 'AS', 300, 3, '.\\images\\ring_two.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (14, 'Ring of Power', 'AS', 340, 3, '.\\images\\ring_one.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (15, 'Band of Widom', 'AS', 300, 3, '.\\images\\rune_helm.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (16, 'Giant Walnut', 'AS', 5, 3, '.\\images\\shield.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (17, 'Tattered Cloak', 'AS', 45, 3, '.\\images\\cloak.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (19, 'Bracelet', 'AS', 50, 3, '.\\images\\necklace.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (20, 'Stick', 'AS', 560, 3, '.\\images\\stick.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (21, 'Super Stick', 'AS', 32, 3, '.\\images\\stick.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (22, 'Mega Stick', 'AS', 322, 3, '.\\images\\stick.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (23, 'Thornmail', 'A', 2350, 1, '.\\images\\rune_helm.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (18, 'Blue Chestplate', 'A', 500, 1, '.\\images\\item_bag.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (24, 'Leather Hauberk', 'A', 300, 1, '.\\images\\leather_cuirass.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (25, 'Long Shirt', 'A', 5, 1, '.\\images\\green_tunic.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (26, 'Chainmail', 'A', 80, 1, '.\\images\\rune_helm.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (27, 'Steelmail', 'A', 600, 1, '.\\images\\rune_helm.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (28, 'Bronze Chest', 'A', 400, 1, '.\\images\\full_plate_armor.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (29, 'Iron Chest', 'A', 500, 1, '.\\images\\full_plate_armor.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (30, 'Steel Chest', 'A', 600, 1, '.\\images\\full_plate_armor.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (31, 'Mythril Chest', 'A', 700, 1, '.\\images\\full_plate_armor.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (33, 'Adamant Chest', 'A', 1000, 1, '.\\images\\full_plate_armor.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (34, 'Rune Chest', 'A', 1200, 1, '.\\images\\full_plate_armor.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (35, 'Red Flower', 'G', 3, 4, '.\\images\\item_bag.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (36, 'Yellow Flower', 'G', 4, 4, '.\\images\\item_bag.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (37, 'Health Potion', 'G', 25, 4, '.\\images\\potion.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (38, 'Mana Potion', 'G', 25, 4, '.\\images\\potion.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (39, 'Towel', 'G', 50, 4, '.\\images\\item_bag.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (40, 'Cow Hide', 'G', 60, 4, '.\\images\\item_bag.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (41, 'Calender', 'G', 70, 4, '.\\images\\spellbook.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (42, 'Strength Potion', 'G', 35, 4, '.\\images\\potion.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (43, 'Chapstick', 'G', 50, 4, '.\\images\\stick.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (44, 'Super Potion', 'G', 60, 4, '.\\images\\potion.png');
+INSERT INTO ROOT.ITEMS (ITEM_ID, ITEM_NAME, ITEM_TYPE, PRICE, OWNER_ID, ITEM_PATH) 
+	VALUES (45, 'Loose Rope', 'G', 32, 4, '.\\images\\item_bag.png');
