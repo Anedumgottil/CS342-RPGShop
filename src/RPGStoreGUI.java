@@ -26,8 +26,8 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     private int currentPage;                  //The current page.
     private int totalPages;                   //The total number of pages.
     private boolean mode;                     //The mode (buy/sell) for the store.
-    private int player;                       //The current player.
     private int store;                        //The current store.
+    private boolean help;                     //Determines whether or not to display the help message.
     
     private CustomButton buyTab;              //The button for the buy tab.
     private CustomButton sellTab;             //The button for the sell tab.
@@ -57,7 +57,8 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         addMouseListener(this);
         setFocusable(true);       
         
-        player = 0;        
+        help = false;
+     
         switchStore(0); 
         initializeButtons();
         
@@ -87,6 +88,12 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         super.paint(g);
         CustomButton.setGraphics(g);
         ScaledPoint.setWindowDimensions(getWidth(), getHeight());
+        
+        if(help)        //display help message
+        {
+            showHelp(g);
+            return;
+        }
  
         //Draw main GUI components
         drawStoreBG(g);
@@ -95,10 +102,61 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         drawStoreMessage(g);
         drawInventory(g);
         drawBalance(g);
+        drawPageIndicator(g);
                 
         deactivateButtons();
         CustomButton.draw();
        
+    }
+    
+    private void drawPageIndicator(Graphics g)
+    //  PRE:  g must be initialized.
+    //  POST: Draws a page indicator above the OK button. The filled in circle represents which
+    //        page we're currently on.
+    {
+        int x1;             //First x coordinate for drawing area.
+        int y1;             //First y coordinate for drawing area.
+        int x2;             //Second x coordinate for drawing area.
+        int y2;             //Second y coordinate for drawing area.
+        int width;          //Width of drawing area.
+        int height;         //Height of drawing area.
+        int offset;         //Offset between circles.
+        Graphics2D g2;      //Graphics2D to change brush stroke.
+        
+        x1 = ScaledPoint.scalerToX(0.275);
+        x2 = ScaledPoint.scalerToX(0.325);
+        y1 = ScaledPoint.scalerToY(0.85);
+        y2 = ScaledPoint.scalerToY(0.89);
+        
+        width = (x2 - x1)/2;
+        height = y2-y1;
+        
+        offset = ScaledPoint.scalerToX(0.005)/2;
+        
+        g2 = (Graphics2D) g;
+        
+        g2.setColor(Color.WHITE);
+        g2.setStroke(new BasicStroke(1));
+        
+        if(currentPage == 0)        //if we are on the first page
+        {            
+            g.fillOval(x1 - offset, y1, width, height);
+            g.drawOval(x1+width + offset, y1, width, height);
+        }
+        
+        else                        //if we are on the second page.
+        {
+            g.drawOval(x1 - offset, y1, width, height);
+            g.fillOval(x1+width + offset, y1, width, height);
+        }
+    }
+    
+    private void showHelp(Graphics g)
+    //  PRE:  g must be initialized.
+    //  POST: Displays the help image to the screen.
+    {
+	JOptionPane.showMessageDialog(this, "Once you are satisfied, click anywhere to continue!");
+        Drawing.drawImage(g, 0, 0, getWidth(), getHeight(), ".\\images\\accessoryMerchant.jpg");
     }
     
     private void deactivateButtons()
@@ -664,6 +722,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         ScaledPoint[] sellTabPos;           //The scaled points for the sell tab.
         ScaledPoint[] nextStorePos;         //The scaled points for the next store button.
         ScaledPoint[] sortPos;              //The scaled points for the sort button.
+        ScaledPoint[] helpPos;              //The scaled points for the help button.
         
         buySellButtonPos = new ScaledPoint[2];
         buySellButtonPos[0] = new ScaledPoint(0.25, .90);
@@ -699,6 +758,11 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         sortPos[0] = new ScaledPoint(0.47, .147);
         sortPos[1] = new ScaledPoint(0.57, .197);
         new CustomButton("sort", "SORT", sortPos);
+
+        helpPos = new ScaledPoint[2];
+        helpPos[0] = new ScaledPoint(0.005, .945);
+        helpPos[1] = new ScaledPoint(0.105, 0.995);
+        new CustomButton("help", "HELP", helpPos);
     }
     
     private void switchStore(int store)
@@ -785,6 +849,13 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         String buttonName;              //The name of the button.
         int option;                     //Option chosen by user.
         
+        if(help)            //if in help mode
+        {
+            help = false;
+            repaint();
+            return;
+        }
+        
         wasItemSelected(e.getX(), e.getY());
         buttonPressed = CustomButton.wasPressed(e.getX(), e.getY());
         
@@ -852,6 +923,10 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 
                 break;
                 
+            case "help":
+                help = true;
+                break;
+                
             default:
         }
         
@@ -869,6 +944,11 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     public void keyPressed(KeyEvent e) 
     {       
         int option;     //The option the user selected.
+        
+        if(help)    //if in help mode
+        {
+            return;
+        }
         
         switch(e.getKeyCode())              //handle event associated with key
         {
