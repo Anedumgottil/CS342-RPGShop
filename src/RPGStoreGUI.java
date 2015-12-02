@@ -43,6 +43,9 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     
     private int sizeQueryResult;                            //The number of rows returned from query
     private int orderToSort;                    
+
+    private ResultSet setOfResults;
+    
     
     public RPGStoreGUI()
     //  POST: Constructs a RPGStoreGUI object. Initializes location of all GUI elements.
@@ -386,9 +389,45 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         g2.drawRect(--x1, --y1, ++width, height);
         g2.setColor(Color.WHITE);
         
+        switch(store)
+        {
+            case 0:
+                //itemName = (getUserItems("Weapon" , orderToSort))[count][0];
+                //itemPrice = (getUserItems("Weapon", orderToSort))[count][1];
+                //iconPath = (getUserItems("Weapon", orderToSort))[count][2];
+                setOfResults = getUserItems("Weapon", orderToSort);
+                break;
+            case 1:
+                //itemName = (getUserItems("ArmorSmith", orderToSort))[count][0];
+                //itemPrice = (getUserItems("ArmorSmith", orderToSort))[count][1];
+                //iconPath = (getUserItems("ArmorSmith", orderToSort))[count][2];
+                setOfResults = getUserItems("ArmorSmith", orderToSort);
+                break;
+            case 2:
+                //itemName = (getUserItems("Accessory", orderToSort))[count][0];
+                //itemPrice = (getUserItems("Accessory", orderToSort))[count][1];
+                //iconPath = (getUserItems("Accessory", orderToSort))[count][2];
+                setOfResults = getUserItems("Accessory", orderToSort);
+                break;
+            case 3:
+                //itemName = (getUserItems("General", orderToSort))[count][0];
+                //itemPrice = (getUserItems("General", orderToSort))[count][1];
+                //iconPath = (getUserItems("General", orderToSort))[count][2];
+                setOfResults = getUserItems("Genral", orderToSort);
+                break;
+        }
+        
+        String itemName ="";
+        String iconPath = "";
+        String itemPrice = "";
+        
+        //String[] itemNameArray = setOfResults.getArray("item_name");
         
         int count = 0;
         count = currentPage * ITEMSPERPAGE;
+        
+        try{
+            /*
         for(int i = 0; i < ITEMSPERPAGE; i++)  //draw each item into the window
         {
             itemY = y1 + (itemHeight)*i;
@@ -397,14 +436,63 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             {
                 g2.drawRect(x1, itemY, width, itemHeight);
             }
-       
-            drawItem(g2, i, count);
+            
+            if(setOfResults.next()){
+            itemName = setOfResults.getString("item_name");
+            itemPrice = setOfResults.getString("price");
+            iconPath = setOfResults.getString("item_path");
+            
+            }
+            //System.out.println(i +" Item name :" + itemName);
+            //System.out.println(i + "Item path :" + iconPath);
+            //System.out.println(i +"Item price :" + itemPrice);
+            
+            drawItem(g2, i, count,itemName, iconPath, itemPrice);
+            
             System.out.println("COUNT IS " + count);
+            
             count++;
+        }*/
+        for(int i = 0; setOfResults.next(); i++){
+            
+       
+                if(i >= ITEMSPERPAGE){
+                    System.out.println("B");
+                    return;
+                }
+           
+            
+            itemY = y1 + (itemHeight)*i;
+
+            if(itemSelected == i)  //if the item was selected, highlight it
+            {
+                g2.drawRect(x1, itemY, width, itemHeight);
+            }
+            
+            //if(setOfResults.next()){
+            itemName = setOfResults.getString("item_name");
+            itemPrice = setOfResults.getString("price");
+            iconPath = setOfResults.getString("item_path");
+            
+            //}
+            //System.out.println(i +" Item name :" + itemName);
+            //System.out.println(i + "Item path :" + iconPath);
+            //System.out.println(i +"Item price :" + itemPrice);
+            
+            drawItem(g2, i, count,itemName, iconPath, itemPrice);
+            
+            System.out.println("COUNT IS " + count);
+            System.out.println("i "+ i);
+            count++;
+            
         }
+        }catch(Exception e){
+                System.out.println(e.toString());
+                System.out.println("Oh no, not like this...");
+            }
     }
         
-    private void drawItem(Graphics g, int item, int count)
+    private void drawItem(Graphics g, int item,int count, String itemName,String iconPath, String itemPrice)
     {
         Font font;          //The font to be used.
         int x1;             //The first x coordinate of drawing area.
@@ -417,15 +505,15 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         int iconX;          //x coordinate of the icon.
         int iconY;          //y coordinate of the icon.
         int iconLength;     //Length of the icon.
-        String iconPath;    //The file path to the icon.
+        //String iconPath;    //The file path to the icon.
         
         int itemNameX;      //The x coordinate of the item name.
         int itemNameLength; //The length of the item name.
-        String itemName;    //The name of the item.
+        //String itemName;    //The name of the item.
         
         int itemPriceX;     //The x coordinate of the item price.
         int itemPriceWidth; //The width of the item price.
-        String itemPrice;   //The price of the item.
+        //String itemPrice;   //The price of the item.
         
         x1 = itemPositions[item][0].getScaledX();
         x2 = itemPositions[item][1].getScaledX();
@@ -434,57 +522,52 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         width = x2 - x1;
         height = y2 - y1;  
          
-        itemName = "";
-        itemPrice = "";
-        iconPath = "";
+        //itemName = "";
+       // itemPrice = "";
+        //iconPath = "";
         
-         
+         /*
         if(count > sizeQueryResult)
         {
             return;
-        }
+        }*
             
-         switch(store)
-        {
-            case 0:
-                itemName = (getUserItems("Weapon" , orderToSort))[count][0];
-                itemPrice = (getUserItems("Weapon", orderToSort))[count][1];
-                iconPath = (getUserItems("Weapon", orderToSort))[count][2];
-                break;
-            case 1:
-                itemName = (getUserItems("ArmorSmith", orderToSort))[count][0];
-                itemPrice = (getUserItems("ArmorSmith", orderToSort))[count][1];
-                iconPath = (getUserItems("ArmorSmith", orderToSort))[count][2];
-                break;
-            case 2:
-                itemName = (getUserItems("Accessory", orderToSort))[count][0];
-                itemPrice = (getUserItems("Accessory", orderToSort))[count][1];
-                iconPath = (getUserItems("Accessory", orderToSort))[count][2];
-                break;
-            case 3:
-                itemName = (getUserItems("General", orderToSort))[count][0];
-                itemPrice = (getUserItems("General", orderToSort))[count][1];
-                iconPath = (getUserItems("General", orderToSort))[count][2];
-                break;
-        }
+         /*
+        try{
+          //  while(setOfResults.next()){
+              for(int i =0; setOfResults.next(); i++){  
+                  
+                itemName = setOfResults.getString("item_name");
+                itemPrice = setOfResults.getString("price");
+                iconPath = setOfResults.getString("item_path");
+                System.out.println(i);        
+            }
+        }catch(Exception e){
+            System.out.println(e.toString());
+            System.out.println("Oh no, not like this...");
+        }*/
          
+         //System.out.println(" Item name :" + itemName);
+            //System.out.println("Item path :" + iconPath);
+            //System.out.println("Item price :" + itemPrice);
+        
         iconX = x1+(int)(width*.01);
         iconY = y1+(int)(height*.1);
         iconLength = (int)(height*.8);
-       
+
         Drawing.drawImage(g, iconX, iconY, iconLength, iconLength, iconPath);
-        
+
         itemNameX = iconX + (int)(iconLength*1.5);
         itemNameLength = (int)(width*0.6);
-      
+
         font = Drawing.getFont(itemName, itemNameLength, (int)(iconLength*0.8), FONTNAME, FONTSTYLE);
         g.setFont(font);
         g.setColor(Color.WHITE);
         g.drawString(itemName, itemNameX, iconY+(int)(iconLength*0.9));
-        
+
         itemPriceX = x1 + (int)(width * 0.8);
         itemPriceWidth = (int)(width*0.15);
-        
+
         font = Drawing.getFont(itemPrice, itemPriceWidth, iconLength, FONTNAME, FONTSTYLE);
         g.setFont(font);
         g.setColor(Color.WHITE);
@@ -736,7 +819,15 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             case "button":
                 
                 /********************CHANGE TO FUNCTION CALL *********************/
-                option = JOptionPane.showConfirmDialog(this, ((!mode)?"Buy ":"Sell ") + "for " + "$100?");
+                String itemPrice = "";
+                try{
+                     itemPrice=setOfResults.getString("price");
+                }catch(Exception e3){
+                    
+                }
+               
+                
+                option = JOptionPane.showConfirmDialog(this, ((!mode)?"Buy ":"Sell ") + "for " + itemPrice +"?");
                 
                 if(option == 0)     //if they choose to buy/sell
                 {
@@ -906,6 +997,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         
         return order;
     }
+    /*
     public String[][] getUserItems(String user_name, int sortOrder)
     {   
         String order = "";
@@ -944,11 +1036,162 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         
         return results;
     }
+    */
+    public ResultSet getUserItems(String user_name, int sortOrder)
+    {   
+        String order = "";
+        
+        switch(sortOrder)
+        {
+            case 0: 
+                order = "order by item_name ASC";
+                break;
+                
+            case 1:
+                order = "order by item_name DESC";
+                break;
+            case 2:
+                order = "order by price ASC";
+                break;
+            case 3:
+                order = "order by price DESC";
+                break;
+            default:
+                order = "";
+                break;
+        }
+        
+        String str = String.format("select * from items "
+                    + "inner join "
+                    + "("
+                    + "select * from users where user_name = '%s' "
+                    + ") AS temp "
+                    + "ON temp.user_id = items.owner_id "
+                    + "%s" ,user_name,order);
+        
+        System.out.println(str);
+        
+        ResultSet results = connect(str);
+        
+        return results;
+    }
     
+    public void buyItemFromUser(String buyer_name, String seller_name, int item_id)
+    {
+        
+        String str;                                                    //String to store a sql query
+        int new_buyer_balance = -1;
+         int new_seller_balance = -1;
+                 
+        str = String.format("select user_id, balance from users "
+                + "where user_name = '%s'",buyer_name);                 //Query to select info about the buyer
+        
+        ResultSet buyer_results = connect(str);                         //ResultSet about the buyer
+        
+        str = String.format("select user_id, balance from users "
+                + "where user_name = '%s'",seller_name);                //Query to select info about the seller
+        
+        ResultSet seller_results = connect(str);                        //ResulrtSet about the seller
+        
+        str = String.format("select owner_id, price from items "
+                + "where item_id  = %d",item_id);                       //Query to select info about the item
+        
+        ResultSet item_results = connect(str);                          //ResultSet about the item
+        
+        try{
+            new_buyer_balance = buyer_results.getInt("balance") - item_results.getInt("price");  //The buyer's new balance
+            new_seller_balance = seller_results.getInt("balance") + item_results.getInt("price");//The seller's new balance
+
+            if(new_buyer_balance > 0)      //If the buyer wont go negative
+            {
+                str = String.format("Update users"
+                        + "set balance = %d"
+                        + "where user_name = '%s'", new_buyer_balance,buyer_name);
+               
+                connectNon(str);                                     //Executre non scalar query
+                
+                str = String.format("Update users"
+                        + "set balance = %d"
+                        + "where user_name = '%s'", new_seller_balance,seller_name);
+                
+                connectNon(str);                                     //Executre non scalar query
+                    
+                str = String.format("Update items"
+                        + "set owner_id = %d", buyer_results.getInt("user_id"));
+                
+                connectNon(str);                                     //Executre non scalar query
+            }
+            else
+            {
+                //Prompt the user with an error
+                JOptionPane.showMessageDialog(null, "You will go bankrupt if you try buying that, try selling some items.");
+            }   
+        }catch(Exception e){
+            //FIX
+        }
+    }
+    
+    public void sellItemFromUser(String buyer_name, String seller_name, int item_id)
+    {
+        
+        String str;
+        
+        str = String.format("select user_id, balance from users "
+                + "where user_name = '%s'",buyer_name);
+        
+        ResultSet buyer_results = connect(str);
+        
+        str = String.format("select user_id, balance from users "
+                + "where user_name = '%s'",seller_name);
+        
+        ResultSet seller_results = connect(str);
+        
+        str = String.format("select owner_id, price from items "
+                + "where item_id  = %d",item_id);
+        
+        ResultSet item_results = connect(str);
+        
+        try{
+            int new_seller_balance = seller_results.getInt("balance") - item_results.getInt("price");
+            int new_buyer_balance = buyer_results.getInt("balance") + item_results.getInt("price");
+
+            if(new_seller_balance > 0)  
+            {
+                str = String.format("Update users"
+                        + "set balance = %d"
+                        + "where user_name = '%s'", new_buyer_balance,buyer_name);
+                //Executre non scalar query
+                
+                connectNon(str);
+                
+                str = String.format("Update users"
+                        + "set balance = %d"
+                        + "where user_name = '%s'", new_seller_balance,seller_name);
+                //do non scalar
+                
+                connectNon(str);
+                
+                str = String.format("Update items"
+                        + "set owner_id = %d", buyer_results.getInt("user_id"));
+                
+                connectNon(str);
+            }
+            else
+            {
+                //Prompt the user with an error
+                JOptionPane.showMessageDialog(null, "The shopkeep will go bankrupt if you try  that, try buying some items.");
+            }   
+        }catch(Exception e){
+            
+        }
+       
+   
+    }
+    /*
     public String[][] connect(String query )
     {
         String driver = "org.apache.derby.jdbc.ClientDriver";               //Driver for DB
-        String url ="jdbc:derby://localhost:1527/ShopDataBase ";             //Url for DB
+        String url ="jdbc:derby://localhost:1527/ShopDataBase";             //Url for DB
         String user = "root";                                               //Username for db
         String pass = "root";                                               //Password for db
         Connection myConnection;                                            //Connection obj to db
@@ -980,7 +1223,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         
         System.out.println("TOTAL SIZE OF RESULT: " + sizeQueryResult);
         results.close();                                                    //Close the ResultSet
-        stmt.close();                                                       //Close the statement
+        stmt.close();                                                        //Close the statement
         myConnection.close();                                               //Close the connection to db
         
         }catch(Exception e)
@@ -990,5 +1233,97 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         }
         
         return fulldata;
+    }*/
+     public void connectNon(String query )
+    {
+        String driver = "org.apache.derby.jdbc.ClientDriver";               //Driver for DB
+        String url ="jdbc:derby://localhost:1527/ShopDataBase";             //Url for DB
+        String user = "root";                                               //Username for db
+        String pass = "root";                                               //Password for db
+        Connection myConnection;                                            //Connection obj to db
+        Statement stmt;                                                     //Statement to execute a result appon
+        ResultSet results= null;                                                  //A set containing the returned results 
+        String[][] fulldata = new String[20][20];
+        
+        try
+        {                                                                //Try connection to db
+        
+        Class.forName(driver).newInstance();                                //Create our db driver
+        
+        myConnection = DriverManager.getConnection(url, user , pass);       //Initalize our connection
+        
+                                             //Query to select all 'users' in users table
+        
+        stmt = myConnection.createStatement();                              //Create a new statement
+        stmt.executeUpdate(query);                             //Store the results of our query
+        
+        /*
+        sizeQueryResult = -1;
+        while(results.next())                                               //Itterate through the results set
+        {
+            sizeQueryResult++;
+            fulldata[sizeQueryResult][0] = (results.getString("item_name"));
+            fulldata[sizeQueryResult][1] = (results.getString("price"));            
+            fulldata[sizeQueryResult][2] = (results.getString("item_path"));
+        }
+        
+        System.out.println("TOTAL SIZE OF RESULT: " + sizeQueryResult);
+        results.close();                                                    //Close the ResultSet
+        stmt.close();                                                        //Close the statement
+        myConnection.close();                                               //Close the connection to db
+        */
+        }catch(Exception e)
+        {                                                //Cannot connect to db
+            System.out.println(e.toString());
+            System.out.println("Error, something went horribly wrong!");
+        }
+        
+        //return results;
+    }
+    public ResultSet connect(String query )
+    {
+        String driver = "org.apache.derby.jdbc.ClientDriver";               //Driver for DB
+        String url ="jdbc:derby://localhost:1527/ShopDataBase";             //Url for DB
+        String user = "root";                                               //Username for db
+        String pass = "root";                                               //Password for db
+        Connection myConnection;                                            //Connection obj to db
+        Statement stmt;                                                     //Statement to execute a result appon
+        ResultSet results= null;                                                  //A set containing the returned results 
+        String[][] fulldata = new String[20][20];
+        
+        try
+        {                                                                //Try connection to db
+        
+        Class.forName(driver).newInstance();                                //Create our db driver
+        
+        myConnection = DriverManager.getConnection(url, user , pass);       //Initalize our connection
+        
+                                             //Query to select all 'users' in users table
+        
+        stmt = myConnection.createStatement();                              //Create a new statement
+        results = stmt.executeQuery(query);                             //Store the results of our query
+        
+        /*
+        sizeQueryResult = -1;
+        while(results.next())                                               //Itterate through the results set
+        {
+            sizeQueryResult++;
+            fulldata[sizeQueryResult][0] = (results.getString("item_name"));
+            fulldata[sizeQueryResult][1] = (results.getString("price"));            
+            fulldata[sizeQueryResult][2] = (results.getString("item_path"));
+        }
+        
+        System.out.println("TOTAL SIZE OF RESULT: " + sizeQueryResult);
+        results.close();                                                    //Close the ResultSet
+        stmt.close();                                                        //Close the statement
+        myConnection.close();                                               //Close the connection to db
+        */
+        }catch(Exception e)
+        {                                                //Cannot connect to db
+            System.out.println(e.toString());
+            System.out.println("Error, something went horribly wrong!");
+        }
+        
+        return results;
     }
 }
