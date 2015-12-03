@@ -482,31 +482,25 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         count = currentPage * ITEMSPERPAGE;
         
         try{
-            
-      
-        currentItem = null;
-        count = currentPage * ITEMSPERPAGE;
-        for(int i = 0; i < ITEMSPERPAGE; i++)  //draw each item into the window
-        {
-           
-            itemY = y1 + (itemHeight)*i;
-            
-            
-            currentItem = itemsArray[count];
-           
-            
-            if(itemSelected == i)  //if the item was selected, highlight it
+
+            currentItem = null;
+            count = currentPage * ITEMSPERPAGE;
+            for(int i = 0; i < ITEMSPERPAGE; i++)  //draw each item into the window
             {
-                g2.drawRect(x1, itemY, width, itemHeight);
-                
+
+                itemY = y1 + (itemHeight)*i;
+
+                currentItem = itemsArray[count];
+
+                if(itemSelected == i)  //if the item was selected, highlight it
+                {
+                    g2.drawRect(x1, itemY, width, itemHeight);
+                }
+
+                drawItem(g2, i, currentItem);
+
+                count++;
             }
-            
-            
-            drawItem(g2, i, currentItem);
-            
-            
-            count++;
-        }
             
         }catch(Exception e){
                 System.err.println(e.toString());
@@ -1202,8 +1196,6 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
 
             myConnection = DriverManager.getConnection(url, user , pass);       //Initalize our connection
 
-
-
             stmt = myConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);                              //Create a new statement
             results = stmt.executeQuery(query);                             //Store the results of our query
             int rowcount = 0;
@@ -1217,8 +1209,6 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             int i = 0;
             while(results.next())                                               //Itterate through the results set
             {
-
-
                itemsArray[i] = new Item(results.getInt("item_id"),results.getString("item_name"),results.getString("item_type"),results.getInt("price"),results.getInt("owner_id"),results.getString("item_path"));
                i++;        
             }
@@ -1265,8 +1255,6 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             int i = 0;
             while(results.next())                                               //Itterate through the results set
             {
-
-
                usersArray[i] = new User(results.getInt("user_id"),results.getString("user_name"),results.getInt("balance"));
                i++;        
             }
