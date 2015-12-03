@@ -46,8 +46,6 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     
     private int sizeQueryResult;                            //The number of rows returned from query
     private int orderToSort;    
-    private int itemSelectedID;
-    private int itemSelectedPrice;
 
     private ResultSet setOfResults;
     private String previous_query;
@@ -371,6 +369,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     private void drawBalance(Graphics g)
     //  POST: Draws the balance of the current player
     {
+        
         Font font;
         String message;
         Color oldColor;
@@ -382,8 +381,11 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         int height;
         int offset;
         int balance;
+        User player;
         
-        balance = 4000; //TODO : change to user balance 
+        player = usersArray[0];
+        
+        balance = player.getBalance(); //TODO : change to user balance 
         oldColor = g.getColor();
         
         x1 = ScaledPoint.scalerToX(0.72);
@@ -476,28 +478,21 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             connectItems(getUserItems("Player", orderToSort));
         }
         
-        int rowcount = 0;
-        
-       
-        
         int count = 0;
         count = currentPage * ITEMSPERPAGE;
         
         try{
-            if(count > 9){
-                //setOfResults.absolute(10);
-            }
+            
       
         currentItem = null;
+        count = currentPage * ITEMSPERPAGE;
         for(int i = 0; i < ITEMSPERPAGE; i++)  //draw each item into the window
         {
-            if(count > 9){
-                //i = 10;
-            }
+           
             itemY = y1 + (itemHeight)*i;
             
             
-            currentItem = itemsArray[i];
+            currentItem = itemsArray[count];
            
             
             if(itemSelected == i)  //if the item was selected, highlight it
@@ -507,20 +502,19 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             }
             
             
-            drawItem(g2, i, count,currentItem);
+            drawItem(g2, i, currentItem);
             
-            System.out.println("COUNT IS " + count);
-            System.out.println("i is " + i);
+            
             count++;
         }
             
         }catch(Exception e){
-                System.out.println(e.toString());
-                System.out.println("Oh no, not like this...");
+                System.err.println(e.toString());
+                System.err.println("Oh no, not like this...");
             }
     }
         
-    private void drawItem(Graphics g, int item,int count, Item currentItem)
+    private void drawItem(Graphics g, int item, Item currentItem)
     {
         Font font;          //The font to be used.
         int x1;             //The first x coordinate of drawing area.
@@ -791,6 +785,9 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         CustomButton buttonPressed;     //Button that was pressed.
         String buttonName;              //The name of the button.
         int option;                     //Option chosen by user.
+        User buyer;                      //User object for buyer 
+        User seller;                    //User object for seller
+        Item selected_item;             //Item object for selected item 
         
         if(help)            //if in help mode
         {
@@ -832,20 +829,65 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 
             case "button":
                 
-                /********************CHANGE TO FUNCTION CALL *********************/
-                String itemPrice = "";
-                try{
-                     itemPrice=setOfResults.getString("price");
-                }catch(Exception e3){
-                    
-                }
-               
+                selected_item = itemsArray[itemSelected];
+                  
+                option = JOptionPane.showConfirmDialog(this, ((!mode)?"Buy ":"Sell ") + "for " + "$"+selected_item.getPrice()+"?");
                 
-                option = JOptionPane.showConfirmDialog(this, ((!mode)?"Buy ":"Sell ") + "for " + itemPrice +"?");
-                
-                if(option == 0)     //if they choose to buy/sell
+                if(option == 0)     //if they choose to buy
                 {
+                     buyer = usersArray[0];
+                    switch(store)   //change message based on value of store.
+                    {
+                        case 0:
+                            seller = usersArray[1];
+                            break;
+
+                        case 1:
+                            seller = usersArray[2];
+                            break;
+
+                        case 2:
+                            seller= usersArray[3];
+                            break;
+
+                        case 3:
+                            seller = usersArray[5];
+                            break;
+
+                        default:
+                            seller = usersArray[1];
+                    }
                     
+                    buyItemFromUser(buyer,seller, selected_item);
+                 
+                }
+                else if(option == 1)    //if they choose to sell
+                {
+                    seller = usersArray[0];
+
+                    switch(store)   //change message based on value of store.
+                    {
+                        case 0:
+                            buyer = usersArray[1];
+                            break;
+
+                        case 1:
+                            buyer = usersArray[2];
+                            break;
+
+                        case 2:
+                            buyer= usersArray[3];
+                            break;
+
+                        case 3:
+                            buyer = usersArray[5];
+                            break;
+
+                        default:
+                            buyer = usersArray[1];
+                    }
+                    
+                    buyItemFromUser(buyer,seller, selected_item);
                 }
                 
                 itemSelected = -1;
@@ -886,11 +928,10 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     @Override
     public void keyPressed(KeyEvent e) 
     {       
-        int option;     //The option the user selected.
-        //int item_id;
-        //int price;
-        String buyer_name;
-        String seller_name;
+        int option;         //The option the user selected.
+        User buyer;         //User object for buyer 
+        User seller;        //User object for seller
+        Item selected_item; //Item object for selected item 
         
         if(help)    //if in help mode
         {
@@ -967,18 +1008,14 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 {
                     break;
                 }
-                
-                System.out.println("item selected "+ itemSelected);
-                
-                Item selected_item = itemsArray[itemSelected];
+
+                selected_item = itemsArray[itemSelected];
                   
-                /********************CHANGE TO FUNCTION CALL *********************/
                 option = JOptionPane.showConfirmDialog(this, ((!mode)?"Buy ":"Sell ") + "for " + "$"+selected_item.getPrice()+"?");
                 
-                if(option == 0)     //if they choose to buy/sell
+                if(option == 0)     //if they choose to buy
                 {
-                     User buyer = usersArray[0];
-                     User seller;
+                     buyer = usersArray[0];
                     switch(store)   //change message based on value of store.
                     {
                         case 0:
@@ -1004,10 +1041,10 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                     buyItemFromUser(buyer,seller, selected_item);
                  
                 }
-                else if(option == 1)
+                else if(option == 1)    //if they choose to sell
                 {
-                    User seller = usersArray[0];
-                    User buyer;
+                    seller = usersArray[0];
+
                     switch(store)   //change message based on value of store.
                     {
                         case 0:
@@ -1055,7 +1092,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     
     public String sortList(int sortOrder)
     {
-        String order = "";
+        String order;
      
         switch(sortOrder)
         {
@@ -1081,7 +1118,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     
     public String getUserItems(String user_name, int sortOrder)
     {   
-        String order = "";
+        String order;
         
         switch(sortOrder)
         {
@@ -1111,10 +1148,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                     + "ON temp.user_id = items.owner_id "
                     + "%s" ,user_name,order);
         
-        //System.out.println(str);
-        
-        //ResultSet results = connect(str);
-        
+
         previous_query = str;
         
         return str;
@@ -1122,226 +1156,35 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     
     public void buyItemFromUser(User buyer, User seller, Item currentItem)
     {
-        /*
-                                                            //String to store a sql query
-        int new_buyer_balance = -1;
-        int new_seller_balance = -1;
-        int buyer_balance = 0;
-        int  seller_balance = 0;
-        int item_balance = 0;
         
-        str = String.format("select user_id, balance from users " //yes
-                + "where user_name = '%s'",buyer_name);                 //Query to select info about the buyer
+        int buyer_balance;
+        int seller_balance;
+        String str;
+        String str2;
+        String str3;
         
-        ResultSet buyer_results = connect(str);                         //ResultSet about the buyer
+        buyer_balance = buyer.getBalance() - currentItem.getPrice();
+        seller_balance = seller.getBalance() + currentItem.getPrice();
         
-        str = String.format("select user_id, balance from users "
-                + "where user_name = '%s'",seller_name);                //Query to select info about the seller
-        
-        ResultSet seller_results = connect(str);                        //ResulrtSet about the seller
-        
-        str = String.format("select owner_id, price from items "
-                + "where item_id  = %d",item_id);                       //Query to select info about the item
-        
-        ResultSet item_results = connect(str);                          //ResultSet about the item
-        */
-        int buyer_balance = buyer.getBalance() - currentItem.getPrice();
-        int seller_balance = seller.getBalance() + currentItem.getPrice();
-        String str,str2,str3;
-        /*
-        try{
-            System.out.println("0");
-            if(seller_results.first())
-            {
-                seller_balance = seller_results.getInt("balance");
-            }
-            System.out.println("djd");
-            
-            if(buyer_results.first())
-            {
-               System.out.println("0.1");
-               
-               buyer_balance = buyer_results.getInt("balance");  //The buyer's new balance 
-               //seller_balance = seller_results.getInt("balance");
-               //item_balance = item_results.getInt("price");
-               
-               //System.out.println("balance "+buyer_balance);
-            }
-            if(item_results.first())
-            {
-                item_balance = item_results.getInt("price");
-            }
-           // System.out.println("balance2 "+new_buyer_balance);
-            /*
-            if(seller_results.next() && item_results.next())
-            {
-                System.out.println("0.2");
-               new_seller_balance = seller_results.getInt("balance") + item_results.getInt("price");//The seller's new balance uh why is it the seller's balance? gotta fix thhat its drawn somewhere we can do that ltater lol, this is way more important okie, so
-               is it crashing or is 
-            }
-           
-            new_buyer_balance = buyer_balance - item_balance;
-            new_seller_balance = seller_balance + item_balance;
-            */
-        
-        
-          System.out.println("balance1 "+buyer_balance);
-            
-            
-            if(buyer_balance > 0)      //If the buyer wont go negative
-            {
-                str = String.format("Update users set balance = (%d) where user_name = '%s'", buyer_balance, buyer.getUserName());
-                
-               
-               
-                //connectNon(str);                                     
-                str2 = String.format("Update users set balance = (%d) where user_name = '%s'", seller_balance, seller.getUserName());
-                
-                str3 = String.format("Update items set owner_id = (%d) where item_name = '%s'",buyer.getUserId(), currentItem.getItemName());
-                
-                
-                updateTables(str,str2,str3);
-                /*
-                str2 = String.format("Update users"
-                        + "set balance == %d"
-                        + "where user_name = '%s'", new_seller_balance,seller_name);
-                str3 = String.format("Update items"
-                        + "set owner_id = %d", buyer_results.getInt("user_id"));
-                */
-         /*       
-                System.out.println("2");
-                 I can do it after, with aarons comments it will make testing this easier copy it over? kk its only like 4 lines...
-                System.out.println("3");
-                connectNon(str);                                     //Executre non scalar query
-                    System.out.print("4");
-                
-                System.out.println("5");
-                connectNon(str);                                     //Executre non scalar query
-            System.out.println("6");
-            */
-            //setOfResults = connectNon(str,str2,str3);
-            }
-            else
-            {
-                //Prompt the user with an error
-                JOptionPane.showMessageDialog(null, "You will go bankrupt if you try buying that, try selling some items."); //okay since its not working, try to do like set balance = " + new_buyer_balance + " etc.
-            }   
-            /*
-        }catch(Exception e){
-            //FIX
-            System.out.println(e.toString());
-            
-        }
-            */
-    }
-    /*
-    public String[][] connect(String query )
-    {
-        String driver = "org.apache.derby.jdbc.ClientDriver";               //Driver for DB
-        String url ="jdbc:derby://localhost:1527/ShopDataBase";             //Url for DB
-        String user = "root";                                               //Username for db
-        String pass = "root";                                               //Password for db
-        Connection myConnection;                                            //Connection obj to db
-        Statement stmt;                                                     //Statement to execute a result appon
-        ResultSet results;                                                  //A set containing the returned results 
-        String[][] fulldata = new String[20][20];
-        
-        try
-        {                                                                //Try connection to db
-        
-        Class.forName(driver).newInstance();                                //Create our db driver
-        
-        myConnection = DriverManager.getConnection(url, user , pass);       //Initalize our connection
-        
-                                             //Query to select all 'users' in users table
-        
-        stmt = myConnection.createStatement();                              //Create a new statement
-        results = stmt.executeQuery(query);                             //Store the results of our query
-        
- 
-        sizeQueryResult = -1;
-        while(results.next())                                               //Itterate through the results set
+        if(buyer_balance > 0)      //If the buyer wont go negative
         {
-            sizeQueryResult++;
-            fulldata[sizeQueryResult][0] = (results.getString("item_name"));
-            fulldata[sizeQueryResult][1] = (results.getString("price"));            
-            fulldata[sizeQueryResult][2] = (results.getString("item_path"));
-        }
-        
-        System.out.println("TOTAL SIZE OF RESULT: " + sizeQueryResult);
-        results.close();                                                    //Close the ResultSet
-        stmt.close();                                                        //Close the statement
-        myConnection.close();                                               //Close the connection to db
-        
-        }catch(Exception e)
-        {                                                //Cannot connect to db
-            System.out.println(e.toString());
-            System.out.println("Error, something went horribly wrong!");
-        }
-        
-        return fulldata;
-    }*/
-    /*
-     public ResultSet connectNon(String query1, String query2, String query3 )
-    {
-        String driver = "org.apache.derby.jdbc.ClientDriver";               //Driver for DB
-        String url ="jdbc:derby://localhost:1527/ShopDataBase";             //Url for DB
-        String user = "root";                                               //Username for db
-        String pass = "root";                                               //Password for db
-        Connection myConnection2;                                            //Connection obj to db
-        Statement stmt2;                                                     //Statement to execute a result appon
-        ResultSet results= null;                                                  //A set containing the returned results 
-        String[][] fulldata = new String[20][20];
-        
-        try
-        {                                                                //Try connection to db
-        
-        Class.forName(driver).newInstance();                                //Create our db driver
-        
-        myConnection2 = DriverManager.getConnection(url, user , pass);       //Initalize our connection
-        
-                                             //Query to select all 'users' in users table
-        System.out.println(previous_query);
-        query1 = "UPDATE users SET balance = (30) WHERE user_name = 'Player'";
-        System.out.println("query1 is: "+ query1);
-        stmt2 = myConnection2.createStatement();                              //Create a new statement
-        stmt2.executeUpdate(query1);                             //error gets thrown here, there still an error?
-        System.out.println("done");
-         System.out.println("query2 is: "+ query2);
-         stmt2.executeUpdate(query2);
-         System.out.println("query3 is: "+ query3);
-         stmt2.executeUpdate(query3);
-         
-         stmt2 = myConnection2.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-    ResultSet.CONCUR_UPDATABLE);                              //Create a new statement
-        results = stmt2.executeQuery(previous_query); 
-        /*
-        sizeQueryResult = -1;
-        while(results.next())                                               //Itterate through the results set
-        {
-            sizeQueryResult++;
-            fulldata[sizeQueryResult][0] = (results.getString("item_name"));
-            fulldata[sizeQueryResult][1] = (results.getString("price"));            
-            fulldata[sizeQueryResult][2] = (results.getString("item_path"));
-        }
-        
-        System.out.println("TOTAL SIZE OF RESULT: " + sizeQueryResult);
-        results.close();                                                    //Close the ResultSet
-        stmt.close();                                                        //Close the statement
-        myConnection.close();                                               //Close the connection to db
-       
-        stmt2.close();                                                        //Close the statement
-        myConnection2.close();                                               //Close the connection to db
-        }catch(Exception e)
-        {                                                //Cannot connect to db
-            System.out.println(e.toString());
-            System.out.println("Error, something went horribly wrong!");
-        }
-        
-        return results;
-    }
+            str = String.format("Update users set balance = (%d) where user_name = '%s'", buyer_balance, buyer.getUserName());
 
-*/
+            str2 = String.format("Update users set balance = (%d) where user_name = '%s'", seller_balance, seller.getUserName());
+
+            str3 = String.format("Update items set owner_id = (%d) where item_name = '%s'",buyer.getUserId(), currentItem.getItemName());
+
+            updateTables(str,str2,str3);
+
+        }
+        else
+        {
+            //Prompt the user with an error
+            JOptionPane.showMessageDialog(null, "You will go bankrupt if you try buying that, try selling some items."); //okay since its not working, try to do like set balance = " + new_buyer_balance + " etc.
+        }   
+            
+    }
+    
     public void connectItems(String query )
     {
         String driver = "org.apache.derby.jdbc.ClientDriver";               //Driver for DB
@@ -1350,47 +1193,44 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         String pass = "root";                                               //Password for db
         Connection myConnection;                                            //Connection obj to db
         Statement stmt;                                                     //Statement to execute a result appon
-        ResultSet results= null;                                                  //A set containing the returned results 
-        String[][] fulldata = new String[20][20];
+        ResultSet results;                                                  //A set containing the returned results 
         
         try
         {                                                                //Try connection to db
         
-        Class.forName(driver).newInstance();                                //Create our db driver
-        
-        myConnection = DriverManager.getConnection(url, user , pass);       //Initalize our connection
-        
-                                             //Query to select all 'users' in users table
-        
-        stmt = myConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-    ResultSet.CONCUR_UPDATABLE);                              //Create a new statement
-        results = stmt.executeQuery(query);                             //Store the results of our query
-        int rowcount = 0;
-        if (results.last()) 
-        {
-            rowcount = results.getRow();
-            results.beforeFirst(); // not rs.first() because the rs.next() below will move on, missing the first element
-        }
-        itemsArray = new Item[rowcount];
-        
-        int i = 0;
-        while(results.next())                                               //Itterate through the results set
-        {
-           sizeQueryResult++;
-         
-           itemsArray[i] = new Item(results.getInt("item_id"),results.getString("item_name"),results.getString("item_type"),results.getInt("price"),results.getInt("owner_id"),results.getString("item_path"));
-           i++;        
-        }
-        
-        System.out.println("TOTAL SIZE OF Items: " + sizeQueryResult);
-        results.close();                                                    //Close the ResultSet
-        stmt.close();                                                        //Close the statement
-        myConnection.close();                                               //Close the connection to db
+            Class.forName(driver).newInstance();                                //Create our db driver
+
+            myConnection = DriverManager.getConnection(url, user , pass);       //Initalize our connection
+
+
+
+            stmt = myConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);                              //Create a new statement
+            results = stmt.executeQuery(query);                             //Store the results of our query
+            int rowcount = 0;
+            if (results.last()) 
+            {
+                rowcount = results.getRow();
+                results.beforeFirst(); // not rs.first() because the rs.next() below will move on, missing the first element
+            }
+            itemsArray = new Item[rowcount];
+
+            int i = 0;
+            while(results.next())                                               //Itterate through the results set
+            {
+
+
+               itemsArray[i] = new Item(results.getInt("item_id"),results.getString("item_name"),results.getString("item_type"),results.getInt("price"),results.getInt("owner_id"),results.getString("item_path"));
+               i++;        
+            }
+
+            results.close();                                                    //Close the ResultSet
+            stmt.close();                                                        //Close the statement
+            myConnection.close();                                               //Close the connection to db
 
         }catch(Exception e)
         {                                                //Cannot connect to db
             System.out.println(e.toString());
-            System.out.println("Error, something went horribly wrong in connectItems!");
+            System.err.println("Error, something went horribly wrong in connectItems!");
         }
         
         
@@ -1403,47 +1243,43 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         String pass = "root";                                               //Password for db
         Connection myConnection;                                            //Connection obj to db
         Statement stmt;                                                     //Statement to execute a result appon
-        ResultSet results= null;                                                  //A set containing the returned results 
-        String[][] fulldata = new String[20][20];
+        ResultSet results;                                                  //A set containing the returned results 
         
         try
         {                                                                //Try connection to db
         
-        Class.forName(driver).newInstance();                                //Create our db driver
-        
-        myConnection = DriverManager.getConnection(url, user , pass);       //Initalize our connection
-        
-                                             //Query to select all 'users' in users table
-        
-        stmt = myConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-    ResultSet.CONCUR_UPDATABLE);                              //Create a new statement
-        results = stmt.executeQuery(query);                             //Store the results of our query
-        
-        int rowcount = 0;
-        if (results.last()) 
-        {
-            rowcount = results.getRow();
-            results.beforeFirst(); // not rs.first() because the rs.next() below will move on, missing the first element
-        }
-        usersArray = new User[rowcount];
-        int i = 0;
-        while(results.next())                                               //Itterate through the results set
-        {
-           sizeQueryResult++;
-         
-           usersArray[i] = new User(results.getInt("user_id"),results.getString("user_name"),results.getInt("balance"));
-           i++;        
-        }
-        
-        System.out.println("TOTAL SIZE OF Users: " + sizeQueryResult);
-        results.close();                                                    //Close the ResultSet
-        stmt.close();                                                        //Close the statement
-        myConnection.close();                                               //Close the connection to db
+            Class.forName(driver).newInstance();                                //Create our db driver
+
+            myConnection = DriverManager.getConnection(url, user , pass);       //Initalize our connection
+
+            stmt = myConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);                              //Create a new statement
+            results = stmt.executeQuery(query);                             //Store the results of our query
+
+            int rowcount = 0;
+            if (results.last()) 
+            {
+                rowcount = results.getRow();
+                results.beforeFirst(); 
+            }
+            usersArray = new User[rowcount];
+            int i = 0;
+            while(results.next())                                               //Itterate through the results set
+            {
+
+
+               usersArray[i] = new User(results.getInt("user_id"),results.getString("user_name"),results.getInt("balance"));
+               i++;        
+            }
+
+
+            results.close();                                                    //Close the ResultSet
+            stmt.close();                                                        //Close the statement
+            myConnection.close();                                               //Close the connection to db
 
         }catch(Exception e)
         {                                                //Cannot connect to db
-            System.out.println(e.toString());
-            System.out.println("Error, something went horribly wrong! in connectUsers");
+            System.err.println(e.toString());
+            System.err.println("Error, something went horribly wrong! in connectUsers");
         }   
     }
     
@@ -1455,43 +1291,38 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         String pass = "root";                                               //Password for db
         Connection myConnection;                                            //Connection obj to db
         Statement stmt;                                                     //Statement to execute a result appon
-        ResultSet results= null;                                                  //A set containing the returned results 
-        String[][] fulldata = new String[20][20];
-        
+        ResultSet results;                                                  //A set containing the returned results 
+       
         try
         {                                                                //Try connection to db
         
-        Class.forName(driver).newInstance();                                //Create our db driver
-        
-        myConnection = DriverManager.getConnection(url, user , pass);       //Initalize our connection
-        
-                                             //Query to select all 'users' in users table
-        
-        stmt = myConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-    ResultSet.CONCUR_UPDATABLE);                              //Create a new statement
-        stmt.executeUpdate(updateQuery1);                             //Store the results of our query
-        stmt.executeUpdate(updateQuery2);
-        stmt.executeUpdate(updateQuery3);
-        results = stmt.executeQuery(previous_query);                             //Store the results of our query
-        
-        int i = 0;
-        while(results.next())                                               //Itterate through the results set
-        {
-           sizeQueryResult++;
-         
-           itemsArray[i] = new Item(results.getInt("item_id"),results.getString("item_name"),results.getString("item_type"),results.getInt("price"),results.getInt("owner_id"),results.getString("item_path"));
-           i++;        
-        }
-        
-        System.out.println("TOTAL SIZE OF updateTables: " + sizeQueryResult);
-        results.close();                                                    //Close the ResultSet
-        stmt.close();                                                        //Close the statement
-        myConnection.close();                                               //Close the connection to db
+            Class.forName(driver).newInstance();                                //Create our db driver
+
+            myConnection = DriverManager.getConnection(url, user , pass);       //Initalize our connection
+
+
+            stmt = myConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);                              //Create a new statement
+            stmt.executeUpdate(updateQuery1);                             
+            stmt.executeUpdate(updateQuery2);
+            stmt.executeUpdate(updateQuery3);
+            results = stmt.executeQuery(previous_query);                             //Store the results of our query
+
+            int i = 0;
+            while(results.next())                                               //Itterate through the results set
+            {
+               itemsArray[i] = new Item(results.getInt("item_id"),results.getString("item_name"),results.getString("item_type"),results.getInt("price"),results.getInt("owner_id"),results.getString("item_path"));
+               i++;        
+            }
+
+
+            results.close();                                                    //Close the ResultSet
+            stmt.close();                                                        //Close the statement
+            myConnection.close();                                               //Close the connection to db
 
         }catch(Exception e)
         {                                                //Cannot connect to db
-            System.out.println(e.toString());
-            System.out.println("Error, something went horribly wrong! in updateTables");
+            System.err.println(e.toString());
+            System.err.println("Error, something went horribly wrong! in updateTables");
         }   
     }
 }
