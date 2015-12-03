@@ -42,7 +42,8 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     private ScaledPoint[][] itemPositions;    //The positions of each item box.
     
     private int sizeQueryResult;                            //The number of rows returned from query
-    private int orderToSort;                    
+    private int orderToSort;    
+    private int itemSelectedID;
 
     private ResultSet setOfResults;
     
@@ -471,7 +472,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 //itemName = (getUserItems("General", orderToSort))[count][0];
                 //itemPrice = (getUserItems("General", orderToSort))[count][1];
                 //iconPath = (getUserItems("General", orderToSort))[count][2];
-                setOfResults = getUserItems("Genral", orderToSort);
+                setOfResults = getUserItems("General", orderToSort);
                 break;
         }
         
@@ -500,6 +501,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             if(itemSelected == i)  //if the item was selected, highlight it
             {
                 g2.drawRect(x1, itemY, width, itemHeight);
+                itemSelectedID = setOfResults.getInt("item_id");
             }
             
             if(setOfResults.next()){
@@ -515,8 +517,8 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             
             drawItem(g2, i, count,itemName, iconPath, itemPrice);
             
-            System.out.println("COUNT IS " + count);
-            System.out.println("i is " + i);
+            //System.out.println("COUNT IS " + count);
+            //System.out.println("i is " + i);
             count++;
         }
             
@@ -715,6 +717,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             if(y >= itemY && y <= itemY+itemHeight)     //if this was the item selected
             {
                 itemSelected = i;
+                
                 return;
             }
         }
@@ -987,6 +990,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     {       
         int option;     //The option the user selected.
         int item_id;
+        int price;
         String buyer_name;
         String seller_name;
         
@@ -1067,9 +1071,22 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 }
                 //Get item_id from itemSelected 
                  //item_id = 
+                item_id = 0;
+                price = 0;
+                System.out.println("item selected "+ itemSelectedID);
                 
+                try{
+                //   setOfResults.absolute(itemSelectedID); 
+                //   item_id = setOfResults.getInt("item_id");
+                //   price = setOfResults.getInt("price");
+                }
+                catch(Exception e3)
+                {
+                    
+                }
+                  
                 /********************CHANGE TO FUNCTION CALL *********************/
-                option = JOptionPane.showConfirmDialog(this, ((!mode)?"Buy ":"Sell ") + "for " + "$100?");
+                option = JOptionPane.showConfirmDialog(this, ((!mode)?"Buy ":"Sell ") + "for " + "$"+price+"?");
                 
                 if(option == 0)     //if they choose to buy/sell
                 {
@@ -1096,7 +1113,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                             seller_name = "ERROR";
                     }
                     
-                   // buyItemFromUser(buyer_name,seller_name, item_id);
+                    buyItemFromUser(buyer_name,seller_name, item_id);
                  
                 }
                 else if(option == 1)
