@@ -495,13 +495,15 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         
         try{
             if(count > 9){
-                setOfResults.absolute(10);
+                //setOfResults.absolute(10);
             }
       
         currentItem = null;
         for(int i = 0; i < ITEMSPERPAGE; i++)  //draw each item into the window
         {
-            
+            if(count > 9){
+                //i = 10;
+            }
             itemY = y1 + (itemHeight)*i;
             
             
@@ -518,8 +520,8 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             if(itemSelected == i)  //if the item was selected, highlight it
             {
                 g2.drawRect(x1, itemY, width, itemHeight);
-                itemSelectedID = setOfResults.getInt("item_id");
-                itemSelectedPrice = setOfResults.getInt("price");
+                //itemSelectedID = setOfResults.getInt("item_id");
+                //itemSelectedPrice = setOfResults.getInt("price");
             }
             //System.out.println(i +" Item name :" + itemName);
             //System.out.println(i + "Item path :" + iconPath);
@@ -1082,14 +1084,14 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 
                 System.out.println("item selected "+ itemSelected);
                 
-                
+                Item selected_item = itemsArray[itemSelected];
                   
                 /********************CHANGE TO FUNCTION CALL *********************/
-                option = JOptionPane.showConfirmDialog(this, ((!mode)?"Buy ":"Sell ") + "for " + "$"+itemSelectedPrice+"?");
+                option = JOptionPane.showConfirmDialog(this, ((!mode)?"Buy ":"Sell ") + "for " + "$"+selected_item.getPrice()+"?");
                 
                 if(option == 0)     //if they choose to buy/sell
                 {
-                    buyer_name = "Player";
+                     User buyer = usersArray[0];
                     switch(store)   //change message based on value of store.
                     {
                         case 0:
@@ -1526,7 +1528,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
            i++;        
         }
         
-        System.out.println("TOTAL SIZE OF RESULT: " + sizeQueryResult);
+        System.out.println("TOTAL SIZE OF Items: " + sizeQueryResult);
         results.close();                                                    //Close the ResultSet
         stmt.close();                                                        //Close the statement
         myConnection.close();                                               //Close the connection to db
@@ -1579,7 +1581,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
            i++;        
         }
         
-        System.out.println("TOTAL SIZE OF RESULT: " + sizeQueryResult);
+        System.out.println("TOTAL SIZE OF Users: " + sizeQueryResult);
         results.close();                                                    //Close the ResultSet
         stmt.close();                                                        //Close the statement
         myConnection.close();                                               //Close the connection to db
@@ -1627,7 +1629,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
            i++;        
         }
         
-        System.out.println("TOTAL SIZE OF RESULT: " + sizeQueryResult);
+        System.out.println("TOTAL SIZE OF updateTables: " + sizeQueryResult);
         results.close();                                                    //Close the ResultSet
         stmt.close();                                                        //Close the statement
         myConnection.close();                                               //Close the connection to db
