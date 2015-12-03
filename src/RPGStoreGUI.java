@@ -476,6 +476,11 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 break;
         }
         
+        if( mode == true)
+        {
+            setOfResults = getUserItems("Player", orderToSort);
+        }
+        
         String itemName ="";
         String iconPath = "";
         String itemPrice = "";
@@ -1424,7 +1429,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
      public void connectNon(String query )
     {
         String driver = "org.apache.derby.jdbc.ClientDriver";               //Driver for DB
-        String url ="jdbc:derby://localhost:1527/ShopDataBase";             //Url for DB
+        String url ="jdbc:derby://localhost:1527/GameSop";             //Url for DB
         String user = "root";                                               //Username for db
         String pass = "root";                                               //Password for db
         Connection myConnection;                                            //Connection obj to db
@@ -1470,7 +1475,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     public ResultSet connect(String query )
     {
         String driver = "org.apache.derby.jdbc.ClientDriver";               //Driver for DB
-        String url ="jdbc:derby://localhost:1527/ShopDataBase";             //Url for DB
+        String url ="jdbc:derby://localhost:1527/GameShop";             //Url for DB
         String user = "root";                                               //Username for db
         String pass = "root";                                               //Password for db
         Connection myConnection;                                            //Connection obj to db
