@@ -478,6 +478,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         String itemName ="";
         String iconPath = "";
         String itemPrice = "";
+        int rowcount = 0;
         
         //String[] itemNameArray = setOfResults.getArray("item_name");
         
@@ -485,11 +486,17 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         count = currentPage * ITEMSPERPAGE;
         
         try{
-            /*
+            if(count > 9){
+                setOfResults.absolute(10);
+            }
+      
+        
         for(int i = 0; i < ITEMSPERPAGE; i++)  //draw each item into the window
         {
+            
             itemY = y1 + (itemHeight)*i;
-
+            
+            
             if(itemSelected == i)  //if the item was selected, highlight it
             {
                 g2.drawRect(x1, itemY, width, itemHeight);
@@ -499,7 +506,8 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             itemName = setOfResults.getString("item_name");
             itemPrice = setOfResults.getString("price");
             iconPath = setOfResults.getString("item_path");
-            
+            }else{
+                return;
             }
             //System.out.println(i +" Item name :" + itemName);
             //System.out.println(i + "Item path :" + iconPath);
@@ -508,9 +516,11 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             drawItem(g2, i, count,itemName, iconPath, itemPrice);
             
             System.out.println("COUNT IS " + count);
-            
+            System.out.println("i is " + i);
             count++;
-        }*/
+        }
+            
+        /*
         for(int i = 0; setOfResults.next(); i++){
             
        
@@ -542,8 +552,39 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             System.out.println("COUNT IS " + count);
             System.out.println("i "+ i);
             count++;
+        */
+        /*
+        int i = count;
+        while(setOfResults.next()){
             
+            if (i > ITEMSPERPAGE -1){
+                if(i > 9){
+                   i = count;
+                }
+                i = count;
+                break;
+            }
+            
+            itemY = y1 + (itemHeight)*i;
+
+            if(itemSelected == i)  //if the item was selected, highlight it
+            {
+                g2.drawRect(x1, itemY, width, itemHeight);
+            }
+            
+            itemName = setOfResults.getString("item_name");
+            itemPrice = setOfResults.getString("price");
+            iconPath = setOfResults.getString("item_path");
+            
+            drawItem(g2, i, count, itemName, iconPath, itemPrice);
+            
+            System.out.println("COUNT IS " + count);
+            System.out.println("i "+ i);
+            
+            count++;
+            i++;
         }
+        */
         }catch(Exception e){
                 System.out.println(e.toString());
                 System.out.println("Oh no, not like this...");
@@ -619,6 +660,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         itemNameLength = (int)(width*0.6);
 
         font = Drawing.getFont(itemName, itemNameLength, (int)(iconLength*0.8), FONTNAME, FONTSTYLE);
+        
         g.setFont(font);
         g.setColor(Color.WHITE);
         g.drawString(itemName, itemNameX, iconY+(int)(iconLength*0.9));
@@ -944,6 +986,9 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     public void keyPressed(KeyEvent e) 
     {       
         int option;     //The option the user selected.
+        int item_id;
+        String buyer_name;
+        String seller_name;
         
         if(help)    //if in help mode
         {
@@ -1020,14 +1065,61 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 {
                     break;
                 }
+                //Get item_id from itemSelected 
+                 //item_id = 
                 
-                 
                 /********************CHANGE TO FUNCTION CALL *********************/
                 option = JOptionPane.showConfirmDialog(this, ((!mode)?"Buy ":"Sell ") + "for " + "$100?");
                 
                 if(option == 0)     //if they choose to buy/sell
                 {
+                    buyer_name = "Player";
+                    switch(store)   //change message based on value of store.
+                    {
+                        case 0:
+                            seller_name = "Weapon";
+                            break;
+
+                        case 1:
+                            seller_name = "ArmorSmith";
+                            break;
+
+                        case 2:
+                            seller_name = "Accessory";
+                            break;
+
+                        case 3:
+                            seller_name = "General";
+                            break;
+
+                        default:
+                            seller_name = "ERROR";
+                    }
                     
+                   // buyItemFromUser(buyer_name,seller_name, item_id);
+                 
+                }
+                else if(option == 1)
+                {
+                    seller_name = "Player";
+                    switch(store)   //change message based on value of store.
+                    {
+                        case 0:
+                            buyer_name = "Weapon";
+                            break;
+                        case 1:
+                            buyer_name = "ArmorSmith";
+                            break;
+                        case 2:
+                             buyer_name = "Accessory";
+                            break;
+                        case 3:
+                             buyer_name = "General";
+                            break;
+                        default:
+                             buyer_name = "ERROR";
+                    }
+                    //buyItemFromUser(buyer_name,seller_name, item_id);
                 }
                 
                 itemSelected = -1;
@@ -1057,10 +1149,8 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         switch(sortOrder)
         {
             case 1: 
-                
                 order = "order by item_name ASC";
                 break;
-                
             case 2:
                 order = "order by item_name DESC";
                 break;
@@ -1211,7 +1301,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         }
     }
     
-    public void sellItemFromUser(String buyer_name, String seller_name, int item_id)
+    public void sellItemFromUser(String buyer_name, String seller_name, int item_id)//Proably dont need use Buy with names swapped
     {
         
         String str;
@@ -1380,7 +1470,8 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         
                                              //Query to select all 'users' in users table
         
-        stmt = myConnection.createStatement();                              //Create a new statement
+        stmt = myConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+    ResultSet.CONCUR_READ_ONLY);                              //Create a new statement
         results = stmt.executeQuery(query);                             //Store the results of our query
         
         /*
