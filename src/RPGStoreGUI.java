@@ -835,7 +835,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 option = JOptionPane.showConfirmDialog(this, ((!mode)?"Buy ":"Sell ") + "for " + "$"+selected_item.getPrice()+"?");
                 System.out.println(option);
                 
-                if(option == 0)     //if they choose to buy
+                if(option == 0 && (!mode))     //if they choose to buy
                 {
                      buyer = usersArray[0];
                     switch(store)   //change message based on value of store.
@@ -863,7 +863,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                     buyItemFromUser(buyer,seller, selected_item);
                  
                 }
-                else if(option == 1)    //if they choose to sell
+                else if(option == 0 && mode)    //if they choose to sell
                 {
                     seller = usersArray[0];
 
@@ -1015,7 +1015,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                   
                 option = JOptionPane.showConfirmDialog(this, ((!mode)?"Buy ":"Sell ") + "for " + "$"+selected_item.getPrice()+"?");
                 
-                if(option == 0)     //if they choose to buy
+                if(option == 0 && mode)     //if they choose to buy
                 {
                      buyer = usersArray[0];
                     switch(store)   //change message based on value of store.
@@ -1043,7 +1043,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                     buyItemFromUser(buyer,seller, selected_item);
                  
                 }
-                else if(option == 1)    //if they choose to sell
+                else if(option == 0 && mode)    //if they choose to sell
                 {
                     seller = usersArray[0];
 

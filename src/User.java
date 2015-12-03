@@ -1,20 +1,18 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+// Programmer:  Michael Baccia, Tran Dao, Anthony Nedumgottil, Aaron Zheng
+// Assignment:  Project 4 - Final Project
+// Date:        12/03/15
+// Description: This is the backend User object class to read and store 
+//              data from the Users table
 
-/**
- *
- * @author Anthony
- */
 public class User 
 {
-    private int user_id;
-    private String user_name;
-    private int balance;
-    public User(){
-        
+    private int user_id;            //Int to store the user_id
+    private String user_name;       //String to store the user_name
+    private int balance;            //Int to store the user's balance
+    
+    public User()
+    {
+        this(0,null,0);
     }
     
     public User(int user_id,String user_name, int balance)
@@ -25,6 +23,7 @@ public class User
     }
     
     public int getUserId()
+    
     {
         return user_id;
     }
