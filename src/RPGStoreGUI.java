@@ -477,7 +477,6 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         if(mode)//Sets mode to true for user inventory and displays
         {
             connectItems(getUserItems("Player", orderToSort));
-            System.out.println(previous_query);
         }
         
         int count = 0;
@@ -490,7 +489,9 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             count = currentPage * ITEMSPERPAGE ;
             for(int i = 0; i < ITEMSPERPAGE; i++)  //draw each item into the window
             {
-
+                if(i> itemsArray.length-1){
+                    return;
+                }
                 itemY = y1 + (itemHeight)*i;
 
                 currentItem = itemsArray[count];
@@ -832,6 +833,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 selected_item = itemsArray[itemSelected];
                   
                 option = JOptionPane.showConfirmDialog(this, ((!mode)?"Buy ":"Sell ") + "for " + "$"+selected_item.getPrice()+"?");
+                System.out.println(option);
                 
                 if(option == 0)     //if they choose to buy
                 {
@@ -839,11 +841,11 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                     switch(store)   //change message based on value of store.
                     {
                         case 0:
-                            seller = usersArray[1];
+                            seller = usersArray[2];
                             break;
 
                         case 1:
-                            seller = usersArray[2];
+                            seller = usersArray[1];
                             break;
 
                         case 2:
@@ -851,7 +853,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                             break;
 
                         case 3:
-                            seller = usersArray[5];
+                            seller = usersArray[4];
                             break;
 
                         default:
@@ -868,11 +870,11 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                     switch(store)   //change message based on value of store.
                     {
                         case 0:
-                            buyer = usersArray[1];
+                            buyer = usersArray[2];
                             break;
 
                         case 1:
-                            buyer = usersArray[2];
+                            buyer = usersArray[1];
                             break;
 
                         case 2:
@@ -880,7 +882,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                             break;
 
                         case 3:
-                            buyer = usersArray[5];
+                            buyer = usersArray[4];
                             break;
 
                         default:
@@ -1019,11 +1021,11 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                     switch(store)   //change message based on value of store.
                     {
                         case 0:
-                            seller = usersArray[1];
+                            seller = usersArray[2];
                             break;
 
                         case 1:
-                            seller = usersArray[2];
+                            seller = usersArray[1];
                             break;
 
                         case 2:
@@ -1031,7 +1033,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                             break;
 
                         case 3:
-                            seller = usersArray[5];
+                            seller = usersArray[4];
                             break;
 
                         default:
@@ -1048,11 +1050,11 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                     switch(store)   //change message based on value of store.
                     {
                         case 0:
-                            buyer = usersArray[1];
+                            buyer = usersArray[2];
                             break;
 
                         case 1:
-                            buyer = usersArray[2];
+                            buyer = usersArray[1];
                             break;
 
                         case 2:
@@ -1060,7 +1062,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                             break;
 
                         case 3:
-                            buyer = usersArray[5];
+                            buyer = usersArray[4];
                             break;
 
                         default:
@@ -1175,7 +1177,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         if(buyer_balance > 0)      //If the buyer wont go negative
         {
             str = String.format("Update users set balance = (%d) where user_name = '%s'", buyer_balance, buyer.getUserName());
-
+            
             str2 = String.format("Update users set balance = (%d) where user_name = '%s'", seller_balance, seller.getUserName());
 
             str3 = String.format("Update items set owner_id = (%d) where item_name = '%s'",buyer.getUserId(), currentItem.getItemName());
@@ -1242,7 +1244,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
 
         }catch(Exception e)//Cannot connect to db
         {                                               
-            System.out.println(e.toString());
+            System.err.println(e.toString());
             System.err.println("Error, something went horribly wrong in connectItems!");
         }
         
@@ -1324,9 +1326,14 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             stmt = myConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
                                                 ResultSet.CONCUR_UPDATABLE); 
             stmt.executeUpdate(updateQuery1);
+            System.out.println("Finished:");
+            System.out.println(updateQuery1);       
             stmt.executeUpdate(updateQuery2);
+            System.out.println("Finished:");
+            System.out.println(updateQuery2); 
             stmt.executeUpdate(updateQuery3);
-
+System.out.println("Finished:");
+            System.out.println(updateQuery3); 
             results = stmt.executeQuery(previous_query);                        //Call the previous query
 
             i = 0;
