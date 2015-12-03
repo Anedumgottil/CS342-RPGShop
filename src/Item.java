@@ -29,29 +29,36 @@ public class Item
     }
     
     public int getItemId()
+    //  POST: FCTVAL == this item's item_id
     {
         return item_id;
     }
     
     public String getItemName()
+    //  POST: FCTVAL == this items's item_name
     {
         return item_name;
     }
     
     public String getItemTyep()
+    //  POST: FCTVAL == this item's item_type
     {
         return item_type;
     }
     public int getPrice()
+    //  POST: FCTVAL == this item's price
     {
         return price;
     }
     public int getOwner()
+    //  POST: FCTVAL == this item's owner_id
     {
         return owner_id;
     }
     
-    public String getItemPath(){
+    public String getItemPath()
+    //  POST: FCTVAL == this item's item_path
+    {
         return item_path;
     }
 }

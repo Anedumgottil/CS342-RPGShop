@@ -23,17 +23,19 @@ public class User
     }
     
     public int getUserId()
-    
+    //  POST: FCTVAL == this user's user_id
     {
         return user_id;
     }
     
     public String getUserName()
+    //  POST: FCTVAL == this user's user_name
     {
         return user_name;
     }
     
     public int getBalance()
+    //  POST: FCTVAL == this user's balance
     {
         return balance;
     }

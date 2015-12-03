@@ -505,7 +505,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 }
 
                 drawItem(g2, i, currentItem);
-                System.out.println("i "+i + " count "+count);
+                
                 count++;
             }
             
