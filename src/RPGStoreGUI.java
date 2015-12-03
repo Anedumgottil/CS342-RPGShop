@@ -44,8 +44,10 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     private int sizeQueryResult;                            //The number of rows returned from query
     private int orderToSort;    
     private int itemSelectedID;
+    private int itemSelectedPrice;
 
     private ResultSet setOfResults;
+    private String previous_query;
     
     
     public RPGStoreGUI()
@@ -476,6 +478,10 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 break;
         }
         
+        if(mode)
+        {
+            setOfResults = getUserItems("Player", orderToSort); //i mean its not buying and updating, ya its not updating th eowener
+        }
         String itemName ="";
         String iconPath = "";
         String itemPrice = "";
@@ -498,11 +504,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             itemY = y1 + (itemHeight)*i;
             
             
-            if(itemSelected == i)  //if the item was selected, highlight it
-            {
-                g2.drawRect(x1, itemY, width, itemHeight);
-                itemSelectedID = setOfResults.getInt("item_id");
-            }
+            
             
             if(setOfResults.next()){
             itemName = setOfResults.getString("item_name");
@@ -510,6 +512,13 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             iconPath = setOfResults.getString("item_path");
             }else{
                 return;
+            }
+            
+            if(itemSelected == i)  //if the item was selected, highlight it
+            {
+                g2.drawRect(x1, itemY, width, itemHeight);
+                itemSelectedID = setOfResults.getInt("item_id");
+                itemSelectedPrice = setOfResults.getInt("price");
             }
             //System.out.println(i +" Item name :" + itemName);
             //System.out.println(i + "Item path :" + iconPath);
@@ -678,7 +687,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         return;
     }
     
-    private void wasItemSelected(int x, int y)
+    private void wasItemSelected(int x, int y) //can yoou check how we did the sql for geting user items and see how the paramter was used 
     //  PRE:  x and y should be non-negative values.
     //  POST: Determines whether an item was clicked on based on inventoryPos. If an item was
     //        was clicked, sets itemSelected to the corresponding item.
@@ -989,8 +998,8 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     public void keyPressed(KeyEvent e) 
     {       
         int option;     //The option the user selected.
-        int item_id;
-        int price;
+        //int item_id;
+        //int price;
         String buyer_name;
         String seller_name;
         
@@ -1071,8 +1080,8 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 }
                 //Get item_id from itemSelected 
                  //item_id = 
-                item_id = 0;
-                price = 0;
+                //item_id = 0;
+                //price = 0;
                 System.out.println("item selected "+ itemSelectedID);
                 
                 try{
@@ -1086,7 +1095,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 }
                   
                 /********************CHANGE TO FUNCTION CALL *********************/
-                option = JOptionPane.showConfirmDialog(this, ((!mode)?"Buy ":"Sell ") + "for " + "$"+price+"?");
+                option = JOptionPane.showConfirmDialog(this, ((!mode)?"Buy ":"Sell ") + "for " + "$"+itemSelectedPrice+"?");
                 
                 if(option == 0)     //if they choose to buy/sell
                 {
@@ -1113,7 +1122,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                             seller_name = "ERROR";
                     }
                     
-                    buyItemFromUser(buyer_name,seller_name, item_id);
+                    buyItemFromUser(buyer_name,seller_name, itemSelectedID);
                  
                 }
                 else if(option == 1)
@@ -1260,17 +1269,22 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         
         ResultSet results = connect(str);
         
+        previous_query = str;
+        
         return results;
     }
     
     public void buyItemFromUser(String buyer_name, String seller_name, int item_id)
     {
         
-        String str;                                                    //String to store a sql query
+        String str,str2,str3;                                                    //String to store a sql query
         int new_buyer_balance = -1;
-         int new_seller_balance = -1;
-                 
-        str = String.format("select user_id, balance from users "
+        int new_seller_balance = -1;
+        int buyer_balance = 0;
+        int  seller_balance = 0;
+        int item_balance = 0;
+        
+        str = String.format("select user_id, balance from users " //yes
                 + "where user_name = '%s'",buyer_name);                 //Query to select info about the buyer
         
         ResultSet buyer_results = connect(str);                         //ResultSet about the buyer
@@ -1286,35 +1300,80 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         ResultSet item_results = connect(str);                          //ResultSet about the item
         
         try{
-            new_buyer_balance = buyer_results.getInt("balance") - item_results.getInt("price");  //The buyer's new balance
-            new_seller_balance = seller_results.getInt("balance") + item_results.getInt("price");//The seller's new balance
-
+            System.out.println("0");
+            if(seller_results.first())
+            {
+                seller_balance = seller_results.getInt("balance");
+            }
+            System.out.println("djd");
+            
+            if(buyer_results.first())
+            {
+               System.out.println("0.1");
+               
+               buyer_balance = buyer_results.getInt("balance");  //The buyer's new balance 
+               //seller_balance = seller_results.getInt("balance");
+               //item_balance = item_results.getInt("price");
+               
+               //System.out.println("balance "+buyer_balance);
+            }
+            if(item_results.first())
+            {
+                item_balance = item_results.getInt("price");
+            }
+           // System.out.println("balance2 "+new_buyer_balance);
+            /*
+            if(seller_results.next() && item_results.next())
+            {
+                System.out.println("0.2");
+               new_seller_balance = seller_results.getInt("balance") + item_results.getInt("price");//The seller's new balance uh why is it the seller's balance? gotta fix thhat its drawn somewhere we can do that ltater lol, this is way more important okie, so
+               is it crashing or is 
+            }
+           */
+            new_buyer_balance = buyer_balance - item_balance;
+            new_seller_balance = seller_balance + item_balance;
+            
+          System.out.println("balance1 "+new_buyer_balance);
+            
+            
             if(new_buyer_balance > 0)      //If the buyer wont go negative
             {
-                str = String.format("Update users"
-                        + "set balance = %d"
-                        + "where user_name = '%s'", new_buyer_balance,buyer_name);
+                str = "Update users set balance = " + new_buyer_balance 
+                        + " where user_name = 'Player'";//ok, so it fails at the connectNon connection with the database? wait what
+                
+               System.out.println("1");
                
-                connectNon(str);                                     //Executre non scalar query
+                //connectNon(str);                                     //Eprogram crashes, where is your connectNon
                 
-                str = String.format("Update users"
-                        + "set balance = %d"
+                System.out.println("1.4");//this doesnt run
+                str2 = String.format("Update users"
+                        + "set balance == %d"
                         + "where user_name = '%s'", new_seller_balance,seller_name);
-                
-                connectNon(str);                                     //Executre non scalar query
-                    
-                str = String.format("Update items"
+                str3 = String.format("Update items"
                         + "set owner_id = %d", buyer_results.getInt("user_id"));
-                
+         /*       
+                System.out.println("2");
+                 I can do it after, with aarons comments it will make testing this easier copy it over? kk its only like 4 lines...
+                System.out.println("3");
                 connectNon(str);                                     //Executre non scalar query
+                    System.out.print("4");
+                
+                System.out.println("5");
+                connectNon(str);                                     //Executre non scalar query
+            System.out.println("6");
+            */
+            setOfResults = connectNon(str,str2,str3);
             }
             else
             {
                 //Prompt the user with an error
-                JOptionPane.showMessageDialog(null, "You will go bankrupt if you try buying that, try selling some items.");
+                JOptionPane.showMessageDialog(null, "You will go bankrupt if you try buying that, try selling some items."); //okay since its not working, try to do like set balance = " + new_buyer_balance + " etc.
             }   
+            
         }catch(Exception e){
             //FIX
+            System.out.println(e.toString());
+            
         }
     }
     
@@ -1322,6 +1381,8 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     {
         
         String str;
+        String str2;
+        String str3;
         
         str = String.format("select user_id, balance from users "
                 + "where user_name = '%s'",buyer_name);
@@ -1345,23 +1406,24 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             if(new_seller_balance > 0)  
             {
                 str = String.format("Update users"
-                        + "set balance = %d"
+                        + "set balance = (%d)"
                         + "where user_name = '%s'", new_buyer_balance,buyer_name);
                 //Executre non scalar query
                 
-                connectNon(str);
                 
-                str = String.format("Update users"
+                str2 = String.format("Update users"
                         + "set balance = %d"
                         + "where user_name = '%s'", new_seller_balance,seller_name);
                 //do non scalar
                 
-                connectNon(str);
+               // connectNon(str);
                 
-                str = String.format("Update items"
+                str3 = String.format("Update items"
                         + "set owner_id = %d", buyer_results.getInt("user_id"));
                 
-                connectNon(str);
+     
+                
+                setOfResults = connectNon(str,str2,str3);
             }
             else
             {
@@ -1421,14 +1483,14 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         
         return fulldata;
     }*/
-     public void connectNon(String query )
+     public ResultSet connectNon(String query1, String query2, String query3 )
     {
         String driver = "org.apache.derby.jdbc.ClientDriver";               //Driver for DB
         String url ="jdbc:derby://localhost:1527/ShopDataBase";             //Url for DB
         String user = "root";                                               //Username for db
         String pass = "root";                                               //Password for db
-        Connection myConnection;                                            //Connection obj to db
-        Statement stmt;                                                     //Statement to execute a result appon
+        Connection myConnection2;                                            //Connection obj to db
+        Statement stmt2;                                                     //Statement to execute a result appon
         ResultSet results= null;                                                  //A set containing the returned results 
         String[][] fulldata = new String[20][20];
         
@@ -1437,13 +1499,23 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         
         Class.forName(driver).newInstance();                                //Create our db driver
         
-        myConnection = DriverManager.getConnection(url, user , pass);       //Initalize our connection
+        myConnection2 = DriverManager.getConnection(url, user , pass);       //Initalize our connection
         
                                              //Query to select all 'users' in users table
-        
-        stmt = myConnection.createStatement();                              //Create a new statement
-        stmt.executeUpdate(query);                             //Store the results of our query
-        
+        System.out.println(previous_query);
+        query1 = "UPDATE users SET balance = 30 WHERE user_name = 'Player'";
+        System.out.println("query1 is: "+ query1);
+        stmt2 = myConnection2.createStatement();                              //Create a new statement
+        stmt2.executeUpdate(query1);                             //error gets thrown here, there still an error?
+        System.out.println("done");
+         System.out.println("query2 is: "+ query2);
+         stmt2.executeUpdate(query2);
+         System.out.println("query3 is: "+ query3);
+         stmt2.executeUpdate(query3);
+         
+         stmt2 = myConnection2.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+    ResultSet.CONCUR_UPDATABLE);                              //Create a new statement
+        results = stmt2.executeQuery(previous_query); 
         /*
         sizeQueryResult = -1;
         while(results.next())                                               //Itterate through the results set
@@ -1459,13 +1531,15 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         stmt.close();                                                        //Close the statement
         myConnection.close();                                               //Close the connection to db
         */
+        stmt2.close();                                                        //Close the statement
+        myConnection2.close();                                               //Close the connection to db
         }catch(Exception e)
         {                                                //Cannot connect to db
             System.out.println(e.toString());
             System.out.println("Error, something went horribly wrong!");
         }
         
-        //return results;
+        return results;
     }
     public ResultSet connect(String query )
     {
@@ -1488,7 +1562,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                                              //Query to select all 'users' in users table
         
         stmt = myConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-    ResultSet.CONCUR_READ_ONLY);                              //Create a new statement
+    ResultSet.CONCUR_UPDATABLE);                              //Create a new statement
         results = stmt.executeQuery(query);                             //Store the results of our query
         
         /*
@@ -1506,6 +1580,9 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         stmt.close();                                                        //Close the statement
         myConnection.close();                                               //Close the connection to db
         */
+        
+        //stmt.close();                                                        //Close the statement
+        //myConnection.close();                                               //Close the connection to db
         }catch(Exception e)
         {                                                //Cannot connect to db
             System.out.println(e.toString());
