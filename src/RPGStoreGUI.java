@@ -163,7 +163,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     //  POST: Displays the help image to the screen.
     {
 	JOptionPane.showMessageDialog(this, "Once you are satisfied, click anywhere to continue!");
-        Drawing.drawImage(g, 0, 0, getWidth(), getHeight(), ".\\images\\accessoryMerchant.jpg");
+        Drawing.drawImage(g, 0, 0, getWidth(), getHeight(), ".\\images\\help.jpg");
     }
     
     private void deactivateButtons()
