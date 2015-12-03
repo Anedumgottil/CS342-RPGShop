@@ -83,8 +83,8 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         storeMessagePos[1] = new ScaledPoint(0.995, .80);
         
         itemPositions = initializeItemPositions();
-        
         connectUsers("Select * from users");
+        
         
     }
     
@@ -92,6 +92,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
     public void paint(Graphics g)
     {   
         super.paint(g);
+        connectUsers("Select * from users");
         CustomButton.setGraphics(g);
         ScaledPoint.setWindowDimensions(getWidth(), getHeight());
         
@@ -112,7 +113,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 
         deactivateButtons();
         CustomButton.draw();
-       
+        
     }
     
     private void drawPageIndicator(Graphics g)
@@ -384,7 +385,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         User player;                   //User value for the player 
         
         player = usersArray[0];
-        
+       
         balance = player.getBalance(); 
         oldColor = g.getColor();
         
@@ -399,11 +400,12 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         offset = (width - getFontMetrics(font).stringWidth(message))/2;
         g.setColor(Color.WHITE);
         g.drawString(message, x1+offset, y2);
-
+        
         x1 = ScaledPoint.scalerToX(0.72);
         y1 = ScaledPoint.scalerToY(0.865);
         x2 = ScaledPoint.scalerToX(0.88);
         y2 = ScaledPoint.scalerToY(0.915);
+        
         width = x2-x1;
         height = y2-y1;
         message = "$" + Integer.toString(balance);
@@ -489,7 +491,8 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             count = currentPage * ITEMSPERPAGE ;
             for(int i = 0; i < ITEMSPERPAGE; i++)  //draw each item into the window
             {
-                if(i> itemsArray.length-1){
+                if(i > itemsArray.length-1) //Check if i excceds the array size
+                {
                     return;
                 }
                 itemY = y1 + (itemHeight)*i;
@@ -502,7 +505,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 }
 
                 drawItem(g2, i, currentItem);
-
+                System.out.println("i "+i + " count "+count);
                 count++;
             }
             
@@ -833,7 +836,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 selected_item = itemsArray[itemSelected];
                   
                 option = JOptionPane.showConfirmDialog(this, ((!mode)?"Buy ":"Sell ") + "for " + "$"+selected_item.getPrice()+"?");
-                System.out.println(option);
+                
                 
                 if(option == 0 && (!mode))     //if they choose to buy
                 {
@@ -1326,14 +1329,11 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             stmt = myConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
                                                 ResultSet.CONCUR_UPDATABLE); 
             stmt.executeUpdate(updateQuery1);
-            System.out.println("Finished:");
-            System.out.println(updateQuery1);       
+                 
             stmt.executeUpdate(updateQuery2);
-            System.out.println("Finished:");
-            System.out.println(updateQuery2); 
+            
             stmt.executeUpdate(updateQuery3);
-System.out.println("Finished:");
-            System.out.println(updateQuery3); 
+ 
             results = stmt.executeQuery(previous_query);                        //Call the previous query
 
             i = 0;
