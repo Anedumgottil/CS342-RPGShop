@@ -458,25 +458,15 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         switch(store)
         {
             case 0:
-                //setOfResults = getUserItems("Weapon", orderToSort);
                 connectItems(getUserItems("Weapon", orderToSort));
                 break;
             case 1:
-                //itemName = (getUserItems("ArmorSmith", orderToSort))[count][0];
-                //itemPrice = (getUserItems("ArmorSmith", orderToSort))[count][1];
-                //iconPath = (getUserItems("ArmorSmith", orderToSort))[count][2];
                 connectItems(getUserItems("ArmorSmith", orderToSort));
                 break;
             case 2:
-                //itemName = (getUserItems("Accessory", orderToSort))[count][0];
-                //itemPrice = (getUserItems("Accessory", orderToSort))[count][1];
-                //iconPath = (getUserItems("Accessory", orderToSort))[count][2];
                 connectItems(getUserItems("Accessory", orderToSort));
                 break;
             case 3:
-                //itemName = (getUserItems("General", orderToSort))[count][0];
-                //itemPrice = (getUserItems("General", orderToSort))[count][1];
-                //iconPath = (getUserItems("General", orderToSort))[count][2];
                 connectItems(getUserItems("General", orderToSort));
                 break;
         }
@@ -488,7 +478,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         
         int rowcount = 0;
         
-        //String[] itemNameArray = setOfResults.getArray("item_name");
+       
         
         int count = 0;
         count = currentPage * ITEMSPERPAGE;
@@ -508,24 +498,14 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             
             
             currentItem = itemsArray[i];
-            /*
-            if(setOfResults.next()){
-            itemName = setOfResults.getString("item_name");
-            itemPrice = setOfResults.getString("price");
-            iconPath = setOfResults.getString("item_path");
-            }else{
-                return;
-            }*/
+           
             
             if(itemSelected == i)  //if the item was selected, highlight it
             {
                 g2.drawRect(x1, itemY, width, itemHeight);
-                //itemSelectedID = setOfResults.getInt("item_id");
-                //itemSelectedPrice = setOfResults.getInt("price");
+                
             }
-            //System.out.println(i +" Item name :" + itemName);
-            //System.out.println(i + "Item path :" + iconPath);
-            //System.out.println(i +"Item price :" + itemPrice);
+            
             
             drawItem(g2, i, count,currentItem);
             
@@ -534,71 +514,6 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
             count++;
         }
             
-        /*
-        for(int i = 0; setOfResults.next(); i++){
-            
-       
-                if(i >= ITEMSPERPAGE){
-                    System.out.println("B");
-                    return;
-                }
-           
-            
-            itemY = y1 + (itemHeight)*i;
-
-            if(itemSelected == i)  //if the item was selected, highlight it
-            {
-                g2.drawRect(x1, itemY, width, itemHeight);
-            }
-            
-            //if(setOfResults.next()){
-            itemName = setOfResults.getString("item_name");
-            itemPrice = setOfResults.getString("price");
-            iconPath = setOfResults.getString("item_path");
-            
-            //}
-            //System.out.println(i +" Item name :" + itemName);
-            //System.out.println(i + "Item path :" + iconPath);
-            //System.out.println(i +"Item price :" + itemPrice);
-            
-            drawItem(g2, i, count,itemName, iconPath, itemPrice);
-            
-            System.out.println("COUNT IS " + count);
-            System.out.println("i "+ i);
-            count++;
-        */
-        /*
-        int i = count;
-        while(setOfResults.next()){
-            
-            if (i > ITEMSPERPAGE -1){
-                if(i > 9){
-                   i = count;
-                }
-                i = count;
-                break;
-            }
-            
-            itemY = y1 + (itemHeight)*i;
-
-            if(itemSelected == i)  //if the item was selected, highlight it
-            {
-                g2.drawRect(x1, itemY, width, itemHeight);
-            }
-            
-            itemName = setOfResults.getString("item_name");
-            itemPrice = setOfResults.getString("price");
-            iconPath = setOfResults.getString("item_path");
-            
-            drawItem(g2, i, count, itemName, iconPath, itemPrice);
-            
-            System.out.println("COUNT IS " + count);
-            System.out.println("i "+ i);
-            
-            count++;
-            i++;
-        }
-        */
         }catch(Exception e){
                 System.out.println(e.toString());
                 System.out.println("Oh no, not like this...");
@@ -634,36 +549,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         y2 = itemPositions[item][1].getScaledY();        
         width = x2 - x1;
         height = y2 - y1;  
-         
-        //itemName = "";
-       // itemPrice = "";
-        //iconPath = "";
-        
-         /*
-        if(count > sizeQueryResult)
-        {
-            return;
-        }*
-            
-         /*
-        try{
-          //  while(setOfResults.next()){
-              for(int i =0; setOfResults.next(); i++){  
-                  
-                itemName = setOfResults.getString("item_name");
-                itemPrice = setOfResults.getString("price");
-                iconPath = setOfResults.getString("item_path");
-                System.out.println(i);        
-            }
-        }catch(Exception e){
-            System.out.println(e.toString());
-            System.out.println("Oh no, not like this...");
-        }*/
-         
-         //System.out.println(" Item name :" + itemName);
-            //System.out.println("Item path :" + iconPath);
-            //System.out.println("Item price :" + itemPrice);
-        
+       
         iconX = x1+(int)(width*.01);
         iconY = y1+(int)(height*.1);
         iconLength = (int)(height*.8);
@@ -1092,52 +978,59 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
                 if(option == 0)     //if they choose to buy/sell
                 {
                      User buyer = usersArray[0];
+                     User seller;
                     switch(store)   //change message based on value of store.
                     {
                         case 0:
-                            seller_name = "Weapon";
+                            seller = usersArray[1];
                             break;
 
                         case 1:
-                            seller_name = "ArmorSmith";
+                            seller = usersArray[2];
                             break;
 
                         case 2:
-                            seller_name = "Accessory";
+                            seller= usersArray[3];
                             break;
 
                         case 3:
-                            seller_name = "General";
+                            seller = usersArray[5];
                             break;
 
                         default:
-                            seller_name = "ERROR";
+                            seller = usersArray[1];
                     }
                     
-                    //buyItemFromUser(buyer_name,seller_name, itemSelectedID);
+                    buyItemFromUser(buyer,seller, selected_item);
                  
                 }
                 else if(option == 1)
                 {
-                    seller_name = "Player";
+                    User seller = usersArray[0];
+                    User buyer;
                     switch(store)   //change message based on value of store.
                     {
                         case 0:
-                            buyer_name = "Weapon";
+                            buyer = usersArray[1];
                             break;
+
                         case 1:
-                            buyer_name = "ArmorSmith";
+                            buyer = usersArray[2];
                             break;
+
                         case 2:
-                             buyer_name = "Accessory";
+                            buyer= usersArray[3];
                             break;
+
                         case 3:
-                             buyer_name = "General";
+                            buyer = usersArray[5];
                             break;
+
                         default:
-                             buyer_name = "ERROR";
+                            buyer = usersArray[1];
                     }
-                    //buyItemFromUser(buyer_name,seller_name, item_id);
+                    
+                    buyItemFromUser(buyer,seller, selected_item);
                 }
                 
                 itemSelected = -1;
@@ -1185,46 +1078,7 @@ public class RPGStoreGUI extends JPanel implements MouseListener, KeyListener
         
         return order;
     }
-    /*
-    public String[][] getUserItems(String user_name, int sortOrder)
-    {   
-        String order = "";
-        
-        switch(sortOrder)
-        {
-            case 0: 
-                order = "order by item_name ASC";
-                break;
-                
-            case 1:
-                order = "order by item_name DESC";
-                break;
-            case 2:
-                order = "order by price ASC";
-                break;
-            case 3:
-                order = "order by price DESC";
-                break;
-            default:
-                order = "";
-                break;
-        }
-        
-        String str = String.format("select * from items "
-                    + "inner join "
-                    + "("
-                    + "select * from users where user_name = '%s' "
-                    + ") AS temp "
-                    + "ON temp.user_id = items.owner_id "
-                    + "%s" ,user_name,order);
-        
-        System.out.println(str);
-        
-        String[][] results = connect(str);
-        
-        return results;
-    }
-    */
+    
     public String getUserItems(String user_name, int sortOrder)
     {   
         String order = "";
